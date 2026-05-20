@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -8,186 +8,22 @@
 <style>
 body{
 margin:0;
-font-family:-apple-system,Arial;
+font-family:-apple-system;
 background:#061b15;
-color:white;
 }
-.app{
-max-width:430px;
-margin:auto;
-background:#f4f7f5;
-min-height:100vh;
-color:black;
-padding-bottom:80px;
-}
-.hero{
-background:linear-gradient(135deg,#061b15,#0b5a39);
-padding:25px;
-color:white;
-border-radius:0 0 30px 30px;
-}
-.card{
-background:white;
-margin:15px;
-padding:18px;
-border-radius:20px;
-box-shadow:0 8px 20px rgba(0,0,0,.08);
-}
-input{
+iframe{
 width:100%;
-padding:14px;
-font-size:22px;
-border-radius:16px;
-border:1px solid #ddd;
-}
-.big{
-font-size:55px;
-font-weight:900;
-color:#08a63d;
-text-align:center;
-}
-.range{
-width:100%;
-accent-color:#08a63d;
-}
-.btn{
-width:100%;
-padding:16px;
+height:100vh;
 border:0;
-background:#08a63d;
-color:white;
-font-size:18px;
-border-radius:16px;
-font-weight:900;
-margin-top:10px;
 }
 </style>
-</head>
 
+</head>
 <body>
 
-<div class="app">
-
-<div class="hero">
-<h1>⚗️ Caldo IA</h1>
-<p>Calculadora inteligente de caldos</p>
-</div>
-
-<div class="card">
-
-<h3>Litros por hectárea</h3>
-
-<div id="numero" class="big">
-150
-</div>
-
-<input
-id="slider"
-class="range"
-type="range"
-min="20"
-max="300"
-value="150"
-oninput="mover()"
->
-
-<input
-id="lha"
-value="150"
-type="number"
-oninput="manual()"
->
-
-</div>
-
-<div class="card">
-
-<h3>Hectáreas</h3>
-
-<input
-id="ha"
-value="100"
-oninput="calcular()"
->
-
-<h3>Tanque</h3>
-
-<input
-id="tanque"
-value="3000"
-oninput="calcular()"
->
-
-</div>
-
-<div class="card">
-
-<h3>Total caldo</h3>
-
-<div
-id="resultado"
-class="big"
->
-
-15000
-
-</div>
-
-</div>
-
-<button
-class="btn"
-onclick="alert('Próximo paso: resumen + tancadas')"
->
-
-Calcular →
-
-</button>
-
-</div>
-
-<script>
-
-function mover(){
-
-lha.value=
-slider.value
-
-numero.innerText=
-slider.value
-
-calcular()
-
-}
-
-function manual(){
-
-slider.value=
-lha.value
-
-numero.innerText=
-lha.value
-
-calcular()
-
-}
-
-function calcular(){
-
-let h=
-+ha.value
-
-let l=
-+lha.value
-
-resultado.innerText=
-h*l
-
-}
-
-calcular()
-
-</script>
+<iframe
+src="https://caldo-ia.vercel.app">
+</iframe>
 
 </body>
 </html>
