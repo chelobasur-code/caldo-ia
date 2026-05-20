@@ -309,7 +309,7 @@ function mostrarToast(texto){
 
 function continuar(){
   document.body.innerHTML = `
-  <div class="app">
+  <div class="app" style="width:100%;max-width:430px;overflow-x:hidden">
 
     <div class="header">
       <button class="help" onclick="location.reload()">‹</button>
@@ -317,7 +317,7 @@ function continuar(){
       <button class="help">?</button>
     </div>
 
-    <div class="content">
+    <div class="content" style="overflow-x:hidden">
 
       <h1>2. Ajustá la aplicación</h1>
       <div class="sub">Jugá con los litros/ha y mirá cómo cambian las tancadas.</div>
@@ -325,46 +325,21 @@ function continuar(){
       <div class="ai-box" style="display:block">
         <b>Litros por hectárea</b>
 
-        <div id="valorLha" style="
-          font-size:58px;
-          font-weight:900;
-          text-align:center;
-          margin:18px 0 4px;
-          color:#111;
-        ">150</div>
+        <div id="valorLha" style="font-size:58px;font-weight:900;text-align:center;margin:18px 0 4px;color:#111">
+          150
+        </div>
 
         <div style="text-align:center;color:#6b7280;font-weight:700;margin-bottom:10px">
           L/ha
         </div>
 
-        <input
-          id="lhaRange"
-          type="range"
-          min="20"
-          max="300"
-          value="150"
-          oninput="moverLha()"
-          style="width:100%;accent-color:#08a63d"
-        >
+        <input id="lhaRange" type="range" min="20" max="300" value="150" oninput="moverLha()" style="width:100%;accent-color:#08a63d">
 
-        <div style="
-          display:flex;
-          justify-content:space-between;
-          font-size:12px;
-          color:#6b7280;
-          margin-top:4px;
-        ">
-          <span>20</span>
-          <span>150</span>
-          <span>300</span>
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:#6b7280;margin-top:4px">
+          <span>20</span><span>150</span><span>300</span>
         </div>
 
-        <div style="
-          display:grid;
-          grid-template-columns:repeat(5,1fr);
-          gap:7px;
-          margin-top:12px;
-        ">
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:12px">
           <button onclick="setLha(47)" class="chip">47</button>
           <button onclick="setLha(60)" class="chip">60</button>
           <button onclick="setLha(75)" class="chip">75</button>
@@ -373,67 +348,22 @@ function continuar(){
         </div>
       </div>
 
-      <div style="
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:12px;
-        margin-top:14px;
-      ">
-        <label class="ai-box" style="display:block;margin:0">
-          <b>Hectáreas</b>
-          <input
-            id="ha"
-            type="number"
-            inputmode="decimal"
-            pattern="[0-9]*"
-            value="100"
-            oninput="calcularAplicacion()"
-            style="
-              margin-top:10px;
-              font-size:30px;
-              font-weight:900;
-              border:0;
-              padding:0;
-            "
-          >
-          <span style="color:#6b7280;font-size:13px">ha a aplicar</span>
-        </label>
+      <label class="ai-box" style="display:block">
+        <b>Hectáreas a aplicar</b>
+        <input id="ha" type="number" inputmode="decimal" value="100" oninput="calcularAplicacion()" style="margin-top:10px;font-size:34px;font-weight:900;border:0;padding:0;width:100%">
+        <span style="color:#6b7280;font-size:13px">ha</span>
+      </label>
 
-        <label class="ai-box" style="display:block;margin:0">
-          <b>Tanque</b>
-          <input
-            id="tanque"
-            type="number"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            value="3000"
-            oninput="calcularAplicacion()"
-            style="
-              margin-top:10px;
-              font-size:30px;
-              font-weight:900;
-              border:0;
-              padding:0;
-            "
-          >
-          <span style="color:#6b7280;font-size:13px">litros</span>
-        </label>
-      </div>
+      <label class="ai-box" style="display:block">
+        <b>Capacidad del tanque</b>
+        <input id="tanque" type="number" inputmode="numeric" value="3000" oninput="calcularAplicacion()" style="margin-top:10px;font-size:34px;font-weight:900;border:0;padding:0;width:100%">
+        <span style="color:#6b7280;font-size:13px">litros</span>
+      </label>
 
-      <div class="ai-box" style="
-        display:block;
-        background:#071b15;
-        color:white;
-        margin-top:16px;
-      ">
+      <div class="ai-box" style="display:block;background:#071b15;color:white">
         <b>Resultado operativo</b>
 
-        <div style="
-          display:grid;
-          grid-template-columns:1fr 1fr;
-          gap:12px;
-          margin-top:14px;
-        ">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
           <div>
             <span style="font-size:13px;color:#b7c7c0">Tancadas necesarias</span>
             <div id="tancadas" style="font-size:34px;font-weight:900">5</div>
@@ -445,11 +375,7 @@ function continuar(){
           </div>
         </div>
 
-        <div style="
-          margin-top:14px;
-          padding-top:14px;
-          border-top:1px solid rgba(255,255,255,.15);
-        ">
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.15)">
           <span style="font-size:13px;color:#b7c7c0">Última tancada</span>
           <div id="ultimaTancada" style="font-size:28px;font-weight:900">3000 L</div>
         </div>
@@ -457,9 +383,7 @@ function continuar(){
 
       <div class="ai-box" style="display:block;background:#e9ffe8">
         <b>Lectura rápida</b>
-        <p id="lectura" style="margin:8px 0 0;color:#304138;font-size:14px">
-          Con 150 L/ha y tanque de 3000 L, cada carga cubre 20 ha.
-        </p>
+        <p id="lectura" style="margin:8px 0 0;color:#304138;font-size:14px"></p>
       </div>
 
       <button class="btn" onclick="alert('Paso 3: Resumen del cálculo')">Continuar →</button>
@@ -478,6 +402,8 @@ function continuar(){
 
   calcularAplicacion();
 }
+
+
 
 function moverLha(){
   document.getElementById("valorLha").innerText =
