@@ -297,14 +297,86 @@ Finesse 15 g/ha</textarea>
 
 <script>
 function fotoCargada(){
-document.getElementById("toast").style.display="block";
-setTimeout(()=>{
-document.getElementById("toast").style.display="none";
-},1400);
+  mostrarToast("Foto cargada");
+}
+
+function mostrarToast(texto){
+  const toast = document.getElementById("toast");
+  toast.innerText = texto;
+  toast.style.display = "block";
+  setTimeout(()=> toast.style.display = "none", 1400);
 }
 
 function continuar(){
-alert("Paso 2: Ajustar parámetros");
+  document.body.innerHTML = `
+  <div class="app">
+
+    <div class="header">
+      <button class="help" onclick="location.reload()">‹</button>
+      <div class="logo">⚗️ Caldo <span>IA</span></div>
+      <button class="help">?</button>
+    </div>
+
+    <div class="content">
+
+      <h1>2. Ajustá los parámetros</h1>
+      <div class="sub">Definí las condiciones de aplicación.</div>
+
+      <div class="ai-box" style="display:block">
+        <b>Hectáreas a aplicar</b>
+        <input id="ha" type="number" value="100" oninput="calcular()" style="margin-top:10px;font-size:24px;font-weight:800">
+      </div>
+
+      <div class="ai-box" style="display:block">
+        <b>Litros por hectárea (L/ha)</b>
+        <div id="valorLha" class="camera" style="width:100%;height:auto;border-radius:0;background:white;color:#111;box-shadow:none;font-size:44px;margin:15px 0 5px">150</div>
+        <input id="lhaRange" type="range" min="20" max="300" value="150" oninput="moverLha()" style="width:100%;accent-color:#08a63d">
+        <input id="lha" type="number" value="150" oninput="editarLha()" style="margin-top:10px;font-size:24px;font-weight:800">
+      </div>
+
+      <div class="ai-box" style="display:block">
+        <b>Capacidad del tanque</b>
+        <input id="tanque" type="number" value="3000" oninput="calcular()" style="margin-top:10px;font-size:24px;font-weight:800">
+      </div>
+
+      <div class="ai-box" style="background:#e9ffe8;display:block">
+        <span>Volumen total de caldo</span>
+        <h2 id="total" style="font-size:38px;margin:8px 0 0">15.000 L</h2>
+      </div>
+
+      <button class="btn" onclick="alert('Paso 3: Resumen del cálculo')">Calcular →</button>
+
+    </div>
+
+    <div class="nav">
+      <button>🏠<span>Inicio</span></button>
+      <button>🕘<span>Historial</span></button>
+      <button>📋<span>Recetas</span></button>
+      <button>👤<span>Perfil</span></button>
+    </div>
+
+  </div>
+  `;
+  calcular();
+}
+
+function moverLha(){
+  lha.value = lhaRange.value;
+  valorLha.innerText = lhaRange.value;
+  calcular();
+}
+
+function editarLha(){
+  lhaRange.value = lha.value;
+  valorLha.innerText = lha.value;
+  calcular();
+}
+
+function calcular(){
+  const ha = Number(document.getElementById("ha").value || 0);
+  const lha = Number(document.getElementById("lha").value || 0);
+  const total = ha * lha;
+  document.getElementById("total").innerText = total.toLocaleString("es-AR") + " L";
 }
 </script>
 
