@@ -10,109 +10,56 @@ body{
 margin:0;
 font-family:-apple-system,Arial;
 background:#061b15;
-color:#111;
+color:white;
 }
-
 .app{
 max-width:430px;
 margin:auto;
-background:#f3f6f4;
+background:#f4f7f5;
 min-height:100vh;
-padding-bottom:90px;
+color:black;
+padding-bottom:80px;
 }
-
 .hero{
-background:linear-gradient(135deg,#071c17,#0b5a39);
+background:linear-gradient(135deg,#061b15,#0b5a39);
 padding:25px;
 color:white;
 border-radius:0 0 30px 30px;
 }
-
-.hero h1{
-margin:0;
-font-size:32px;
-}
-
 .card{
 background:white;
 margin:15px;
 padding:18px;
-border-radius:22px;
-box-shadow:0 8px 30px rgba(0,0,0,.08);
+border-radius:20px;
+box-shadow:0 8px 20px rgba(0,0,0,.08);
 }
-
+input{
+width:100%;
+padding:14px;
+font-size:22px;
+border-radius:16px;
+border:1px solid #ddd;
+}
 .big{
 font-size:55px;
 font-weight:900;
-text-align:center;
 color:#08a63d;
+text-align:center;
 }
-
-input,textarea{
-width:100%;
-padding:14px;
-border-radius:16px;
-border:1px solid #ddd;
-font-size:18px;
-box-sizing:border-box;
-margin-top:8px;
-}
-
 .range{
 width:100%;
-margin-top:15px;
 accent-color:#08a63d;
 }
-
 .btn{
 width:100%;
+padding:16px;
+border:0;
 background:#08a63d;
 color:white;
-border:0;
-padding:16px;
-border-radius:18px;
 font-size:18px;
-font-weight:800;
+border-radius:16px;
+font-weight:900;
 margin-top:10px;
-}
-
-.chips{
-display:grid;
-grid-template-columns:repeat(5,1fr);
-gap:7px;
-margin-top:10px;
-}
-
-.chips button{
-border:0;
-background:#e6f7ea;
-padding:10px;
-border-radius:12px;
-font-weight:700;
-}
-
-.nav{
-position:fixed;
-bottom:0;
-width:min(430px,100%);
-display:grid;
-grid-template-columns:repeat(4,1fr);
-background:white;
-}
-
-.nav button{
-padding:14px;
-border:0;
-background:white;
-font-size:22px;
-}
-
-.screen{
-display:none;
-}
-
-.active{
-display:block;
 }
 </style>
 </head>
@@ -121,99 +68,77 @@ display:block;
 
 <div class="app">
 
-<div id="home" class="screen active">
-
 <div class="hero">
-
 <h1>⚗️ Caldo IA</h1>
-
-<p>Convertí tu receta en calculadora inteligente</p>
-
+<p>Calculadora inteligente de caldos</p>
 </div>
 
 <div class="card">
 
-<b>Receta</b>
+<h3>Litros por hectárea</h3>
 
-<textarea id="receta">Glifosato 2 L/ha
-2,4D 0.65 L/ha</textarea>
-
-<button class="btn" onclick="go('config')">
-
-Convertir →
-
-</button>
-
+<div id="numero" class="big">
+150
 </div>
-
-</div>
-
-<div id="config" class="screen">
-
-<div class="card">
-
-<b>Litros por ha</b>
-
-<div class="big" id="valor">47</div>
 
 <input
+id="slider"
 class="range"
 type="range"
-id="slider"
 min="20"
-max="150"
-value="47"
-oninput="cambiar()"
+max="300"
+value="150"
+oninput="mover()"
 >
 
 <input
 id="lha"
-value="47"
+value="150"
 type="number"
 oninput="manual()"
 >
 
-<div class="chips">
-
-<button onclick="setL(47)">47</button>
-
-<button onclick="setL(60)">60</button>
-
-<button onclick="setL(75)">75</button>
-
-<button onclick="setL(100)">100</button>
-
-<button onclick="setL(150)">150</button>
-
 </div>
+
+<div class="card">
+
+<h3>Hectáreas</h3>
+
+<input
+id="ha"
+value="100"
+oninput="calcular()"
+>
+
+<h3>Tanque</h3>
+
+<input
+id="tanque"
+value="3000"
+oninput="calcular()"
+>
 
 </div>
 
 <div class="card">
 
-<b>Hectáreas</b>
+<h3>Total caldo</h3>
 
-<input id="ha" value="100" oninput="calc()">
+<div
+id="resultado"
+class="big"
+>
 
-<b>Tanque</b>
-
-<input id="tanque" value="3000" oninput="calc()">
-
-</div>
-
-<div class="card">
-
-Caldo total
-
-<h2 id="total">
-
-4700 litros
-
-</h2>
+15000
 
 </div>
 
-<button class="btn" onclick="go('resumen');calc2()">
+</div>
+
+<button
+class="btn"
+onclick="alert('Próximo paso: resumen + tancadas')"
+>
 
 Calcular →
 
@@ -221,172 +146,46 @@ Calcular →
 
 </div>
 
-<div id="resumen" class="screen">
-
-<div class="card">
-
-<h2>Resumen</h2>
-
-<div id="res"></div>
-
-</div>
-
-<div class="card">
-
-<h2>Tancada</h2>
-
-<div id="plan"></div>
-
-</div>
-
-<button class="btn" onclick="copiar()">
-
-Copiar WhatsApp
-
-</button>
-
-</div>
-
-<div class="nav">
-
-<button onclick="go('home')">🏠</button>
-
-<button onclick="go('config')">⚙️</button>
-
-<button onclick="go('resumen')">📊</button>
-
-<button onclick="go('home')">👤</button>
-
-</div>
-
-</div>
-
 <script>
 
-function go(id){
+function mover(){
 
-document.querySelectorAll(".screen")
+lha.value=
+slider.value
 
-.forEach(e=>e.classList.remove("active"))
+numero.innerText=
+slider.value
 
-document.getElementById(id)
-
-.classList.add("active")
-
-}
-
-function cambiar(){
-
-lha.value=slider.value
-
-valor.innerText=slider.value
-
-calc()
+calcular()
 
 }
 
 function manual(){
 
-slider.value=lha.value
+slider.value=
+lha.value
 
-valor.innerText=lha.value
+numero.innerText=
+lha.value
 
-calc()
-
-}
-
-function setL(x){
-
-slider.value=x
-
-lha.value=x
-
-valor.innerText=x
-
-calc()
+calcular()
 
 }
 
-function calc(){
+function calcular(){
 
-let haa=+ha.value
+let h=
++ha.value
 
-let l=+lha.value
+let l=
++lha.value
 
-total.innerText=(haa*l)
-
-+" litros"
-
-}
-
-function calc2(){
-
-let h=+ha.value
-
-let l=+lha.value
-
-let t=+tanque.value
-
-let total=h*l
-
-let tancadas=
-
-Math.ceil(total/t)
-
-let cubre=(t/l)
-
-.toFixed(1)
-
-res.innerHTML=`
-
-${h} ha<br>
-
-${l} L/ha<br>
-
-${total} litros<br>
-
-${tancadas} tancadas<br>
-
-Tanque cubre
-
-${cubre} ha
-
-`
-
-plan.innerHTML=`
-
-Agua:
-
-${(t*.5).toFixed(0)} L
-
-<br><br>
-
-Glifosato:
-
-${(2*cubre).toFixed(1)} L
-
-<br><br>
-
-2,4D:
-
-${(.65*cubre).toFixed(1)} L
-
-`
+resultado.innerText=
+h*l
 
 }
 
-function copiar(){
-
-navigator.clipboard
-
-.writeText(plan.innerText)
-
-alert("Copiado")
-
-}
-
-calc()
-calc2()
+calcular()
 
 </script>
 
