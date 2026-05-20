@@ -202,7 +202,49 @@ Finesse 15 g/ha</textarea>
       </div>
 
       <button onclick="goToScreen1()">← Volver</button>
+      <button onclick="goToScreen3()">Ver resumen final →</button>
     </section>
+    
+    <!-- PANTALLA 3 -->
+<section id="screen3" class="hidden">
+  <div class="card">
+    <h2>3. Resumen del cálculo</h2>
+    <p>Control final antes de cargar el tanque.</p>
+
+    <div class="result">
+      <div class="metric">
+        <small>Superficie total</small>
+        <strong id="resHa">0 ha</strong>
+      </div>
+
+      <div class="metric">
+        <small>Litros por hectárea</small>
+        <strong id="resLtsHa">0 L/ha</strong>
+      </div>
+
+      <div class="metric">
+        <small>Caldo total necesario</small>
+        <strong id="resCaldo">0 L</strong>
+      </div>
+
+      <div class="metric">
+        <small>Capacidad del tanque</small>
+        <strong id="resTanque">0 L</strong>
+      </div>
+
+      <div class="metric">
+        <small>Total de tancadas</small>
+        <strong id="resTancadas">0</strong>
+      </div>
+    </div>
+
+    <h3 style="margin-top:18px">Detalle operativo</h3>
+    <div id="resDetalleTancadas"></div>
+
+    <button onclick="goToScreen2()">← Modificar datos</button>
+    <button onclick="alert('Resumen guardado')">Guardar cálculo</button>
+  </div>
+</section>
 
     <div class="nav">
       <span>Inicio</span>
@@ -214,6 +256,46 @@ Finesse 15 g/ha</textarea>
   </div>
 
   <script>
+  function goToScreen3(){
+    document.getElementById("screen2").classList.add("hidden");
+    document.getElementById("screen3").classList.remove("hidden");
+    loadSummary();
+  }
+
+  function loadSummary(){
+    const hectareas = parseFloat(document.getElementById("hectareas").value) || 0;
+    const tanque = parseFloat(document.getElementById("tanque").value) || 0;
+    const ltsHa = parseFloat(document.getElementById("ltsHa").value) || 0;
+
+    const caldoTotal = hectareas * ltsHa;
+    const tancadas = Math.ceil(caldoTotal / tanque);
+    const ultimaCarga = caldoTotal % tanque === 0 ? tanque : caldoTotal % tanque;
+
+    document.getElementById("resHa").innerText = hectareas + " ha";
+    document.getElementById("resLtsHa").innerText = ltsHa + " L/ha";
+    document.getElementById("resCaldo").innerText = caldoTotal.toFixed(0) + " L";
+    document.getElementById("resTanque").innerText = tanque + " L";
+    document.getElementById("resTancadas").innerText = tancadas;
+
+    const resumen = document.getElementById("resDetalleTancadas");
+    resumen.innerHTML = "";
+
+    for(let i = 1; i <= tancadas; i++){
+      const litros = i === tancadas ? ultimaCarga : tanque;
+      const ha = litros / ltsHa;
+
+      const div = document.createElement("div");
+      div.className = "tank";
+      div.innerHTML = `
+        <div>
+          <b>Tancada ${i}</b><br>
+          Aplicás ${ha.toFixed(1)} ha
+        </div>
+        <strong>${litros.toFixed(0)} L</strong>
+      `;
+      resumen.appendChild(div);
+    }
+  }
     function goToScreen2(){
       document.getElementById("screen1").classList.add("hidden");
       document.getElementById("screen2").classList.remove("hidden");
