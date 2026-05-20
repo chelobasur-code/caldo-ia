@@ -6,24 +6,192 @@
 <title>Caldo IA</title>
 
 <style>
+
 body{
 margin:0;
 font-family:-apple-system;
 background:#061b15;
 }
-iframe{
-width:100%;
-height:100vh;
-border:0;
+
+.app{
+max-width:430px;
+margin:auto;
+min-height:100vh;
+background:#f5f7f6;
+padding-bottom:80px;
 }
+
+.hero{
+padding:30px;
+background:linear-gradient(135deg,#061b15,#0b5a39);
+color:white;
+border-radius:0 0 30px 30px;
+}
+
+.card{
+background:white;
+margin:15px;
+padding:20px;
+border-radius:20px;
+box-shadow:0 5px 20px rgba(0,0,0,.1);
+}
+
+.big{
+font-size:55px;
+font-weight:900;
+text-align:center;
+color:#08a63d;
+}
+
+input{
+width:100%;
+padding:15px;
+font-size:25px;
+border-radius:15px;
+border:1px solid #ddd;
+box-sizing:border-box;
+}
+
+.btn{
+width:100%;
+padding:18px;
+background:#08a63d;
+color:white;
+border:0;
+border-radius:15px;
+font-size:18px;
+font-weight:900;
+margin-top:15px;
+}
+
 </style>
 
 </head>
+
 <body>
 
-<iframe
-src="https://caldo-ia.vercel.app">
-</iframe>
+<div class="app">
+
+<div class="hero">
+
+<h1>⚗️ Caldo IA</h1>
+
+<p>Calculadora inteligente de caldos</p>
+
+</div>
+
+<div class="card">
+
+<h3>Litros por hectárea</h3>
+
+<div
+class="big"
+id="valor">
+
+150
+
+</div>
+
+<input
+type="range"
+min="20"
+max="300"
+value="150"
+id="slider"
+oninput="mover()"
+>
+
+<input
+id="lha"
+value="150"
+type="number"
+oninput="manual()">
+
+</div>
+
+<div class="card">
+
+<h3>Hectáreas</h3>
+
+<input
+id="ha"
+value="100"
+oninput="calc()">
+
+<h3>Tanque</h3>
+
+<input
+id="tanque"
+value="3000"
+oninput="calc()">
+
+</div>
+
+<div class="card">
+
+<h3>Total caldo</h3>
+
+<div
+class="big"
+id="total">
+
+15000
+
+</div>
+
+</div>
+
+<button
+class="btn">
+
+Calcular →
+
+</button>
+
+</div>
+
+<script>
+
+function mover(){
+
+lha.value=
+slider.value
+
+valor.innerText=
+slider.value
+
+calc()
+
+}
+
+function manual(){
+
+slider.value=
+lha.value
+
+valor.innerText=
+lha.value
+
+calc()
+
+}
+
+function calc(){
+
+let h=
++ha.value
+
+let l=
++lha.value
+
+total.innerText=
+h*l
+
+}
+
+calc()
+
+</script>
 
 </body>
 </html>
