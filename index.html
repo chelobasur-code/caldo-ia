@@ -319,32 +319,150 @@ function continuar(){
 
     <div class="content">
 
-      <h1>2. Ajustá los parámetros</h1>
-      <div class="sub">Definí las condiciones de aplicación.</div>
+      <h1>2. Ajustá la aplicación</h1>
+      <div class="sub">Jugá con los litros/ha y mirá cómo cambian las tancadas.</div>
 
       <div class="ai-box" style="display:block">
-        <b>Hectáreas a aplicar</b>
-        <input id="ha" type="number" value="100" oninput="calcular()" style="margin-top:10px;font-size:24px;font-weight:800">
+        <b>Litros por hectárea</b>
+
+        <div id="valorLha" style="
+          font-size:58px;
+          font-weight:900;
+          text-align:center;
+          margin:18px 0 4px;
+          color:#111;
+        ">150</div>
+
+        <div style="text-align:center;color:#6b7280;font-weight:700;margin-bottom:10px">
+          L/ha
+        </div>
+
+        <input
+          id="lhaRange"
+          type="range"
+          min="20"
+          max="300"
+          value="150"
+          oninput="moverLha()"
+          style="width:100%;accent-color:#08a63d"
+        >
+
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          font-size:12px;
+          color:#6b7280;
+          margin-top:4px;
+        ">
+          <span>20</span>
+          <span>150</span>
+          <span>300</span>
+        </div>
+
+        <div style="
+          display:grid;
+          grid-template-columns:repeat(5,1fr);
+          gap:7px;
+          margin-top:12px;
+        ">
+          <button onclick="setLha(47)" class="chip">47</button>
+          <button onclick="setLha(60)" class="chip">60</button>
+          <button onclick="setLha(75)" class="chip">75</button>
+          <button onclick="setLha(100)" class="chip">100</button>
+          <button onclick="setLha(150)" class="chip">150</button>
+        </div>
       </div>
 
-      <div class="ai-box" style="display:block">
-        <b>Litros por hectárea (L/ha)</b>
-        <div id="valorLha" class="camera" style="width:100%;height:auto;border-radius:0;background:white;color:#111;box-shadow:none;font-size:44px;margin:15px 0 5px">150</div>
-        <input id="lhaRange" type="range" min="20" max="300" value="150" oninput="moverLha()" style="width:100%;accent-color:#08a63d">
-        <input id="lha" type="number" value="150" oninput="editarLha()" style="margin-top:10px;font-size:24px;font-weight:800">
+      <div style="
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:12px;
+        margin-top:14px;
+      ">
+        <label class="ai-box" style="display:block;margin:0">
+          <b>Hectáreas</b>
+          <input
+            id="ha"
+            type="number"
+            inputmode="decimal"
+            pattern="[0-9]*"
+            value="100"
+            oninput="calcularAplicacion()"
+            style="
+              margin-top:10px;
+              font-size:30px;
+              font-weight:900;
+              border:0;
+              padding:0;
+            "
+          >
+          <span style="color:#6b7280;font-size:13px">ha a aplicar</span>
+        </label>
+
+        <label class="ai-box" style="display:block;margin:0">
+          <b>Tanque</b>
+          <input
+            id="tanque"
+            type="number"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            value="3000"
+            oninput="calcularAplicacion()"
+            style="
+              margin-top:10px;
+              font-size:30px;
+              font-weight:900;
+              border:0;
+              padding:0;
+            "
+          >
+          <span style="color:#6b7280;font-size:13px">litros</span>
+        </label>
       </div>
 
-      <div class="ai-box" style="display:block">
-        <b>Capacidad del tanque</b>
-        <input id="tanque" type="number" value="3000" oninput="calcular()" style="margin-top:10px;font-size:24px;font-weight:800">
+      <div class="ai-box" style="
+        display:block;
+        background:#071b15;
+        color:white;
+        margin-top:16px;
+      ">
+        <b>Resultado operativo</b>
+
+        <div style="
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:12px;
+          margin-top:14px;
+        ">
+          <div>
+            <span style="font-size:13px;color:#b7c7c0">Tancadas necesarias</span>
+            <div id="tancadas" style="font-size:34px;font-weight:900">5</div>
+          </div>
+
+          <div>
+            <span style="font-size:13px;color:#b7c7c0">Cada tanque cubre</span>
+            <div id="cubreTanque" style="font-size:34px;font-weight:900">20 ha</div>
+          </div>
+        </div>
+
+        <div style="
+          margin-top:14px;
+          padding-top:14px;
+          border-top:1px solid rgba(255,255,255,.15);
+        ">
+          <span style="font-size:13px;color:#b7c7c0">Última tancada</span>
+          <div id="ultimaTancada" style="font-size:28px;font-weight:900">3000 L</div>
+        </div>
       </div>
 
-      <div class="ai-box" style="background:#e9ffe8;display:block">
-        <span>Volumen total de caldo</span>
-        <h2 id="total" style="font-size:38px;margin:8px 0 0">15.000 L</h2>
+      <div class="ai-box" style="display:block;background:#e9ffe8">
+        <b>Lectura rápida</b>
+        <p id="lectura" style="margin:8px 0 0;color:#304138;font-size:14px">
+          Con 150 L/ha y tanque de 3000 L, cada carga cubre 20 ha.
+        </p>
       </div>
 
-      <button class="btn" onclick="alert('Paso 3: Resumen del cálculo')">Calcular →</button>
+      <button class="btn" onclick="alert('Paso 3: Resumen del cálculo')">Continuar →</button>
 
     </div>
 
@@ -357,26 +475,49 @@ function continuar(){
 
   </div>
   `;
-  calcular();
+
+  calcularAplicacion();
 }
 
 function moverLha(){
-  lha.value = lhaRange.value;
-  valorLha.innerText = lhaRange.value;
-  calcular();
+  document.getElementById("valorLha").innerText =
+  document.getElementById("lhaRange").value;
+
+  calcularAplicacion();
 }
 
-function editarLha(){
-  lhaRange.value = lha.value;
-  valorLha.innerText = lha.value;
-  calcular();
+function setLha(valor){
+  document.getElementById("lhaRange").value = valor;
+  document.getElementById("valorLha").innerText = valor;
+  calcularAplicacion();
 }
 
-function calcular(){
+function calcularAplicacion(){
   const ha = Number(document.getElementById("ha").value || 0);
-  const lha = Number(document.getElementById("lha").value || 0);
-  const total = ha * lha;
-  document.getElementById("total").innerText = total.toLocaleString("es-AR") + " L";
+  const tanque = Number(document.getElementById("tanque").value || 0);
+  const lha = Number(document.getElementById("lhaRange").value || 0);
+
+  const caldoTotal = ha * lha;
+  const cantTancadas = tanque > 0 ? Math.ceil(caldoTotal / tanque) : 0;
+  const cubre = lha > 0 ? tanque / lha : 0;
+  const resto = tanque > 0 ? caldoTotal % tanque : 0;
+  const ultima = resto === 0 ? tanque : resto;
+
+  document.getElementById("tancadas").innerText = cantTancadas;
+  document.getElementById("cubreTanque").innerText = cubre.toFixed(1) + " ha";
+  document.getElementById("ultimaTancada").innerText =
+    ultima.toLocaleString("es-AR") + " L";
+
+  document.getElementById("lectura").innerText =
+    "Con " + lha + " L/ha y tanque de " +
+    tanque.toLocaleString("es-AR") +
+    " L, cada carga cubre " +
+    cubre.toFixed(1) +
+    " ha. Para " +
+    ha +
+    " ha necesitás " +
+    cantTancadas +
+    " tancadas.";
 }
 </script>
 
