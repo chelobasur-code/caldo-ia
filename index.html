@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Caldo IA</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#08a63d">
+  <style>
+    body{
+      margin:0;
+      font-family: system-ui, sans-serif;
+      background:#f4f7fb;
+      color:#101828;
+    }
+    .app{
+      max-width:430px;
+      margin:auto;
+      min-height:100vh;
+      background:#fff;
+      padding:18px;
+      box-sizing:border-box;
+    }
+    .top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:18px;
+    }
+    .brand{
+      font-size:24px;
+      font-weight:800;
+    }
+    .card{
+      background:#f8fafc;
+      border-radius:24px;
+      padding:18px;
+      margin-bottom:16px;
+      box-shadow:0 8px 24px rgba(16,24,40,.06);
+    }
+    h1,h2,h3{margin:0 0 10px}
+    p{color:#667085}
+    input, textarea{
+      width:100%;
+      border:1px solid #d0d5dd;
+      border-radius:16px;
+      padding:14px;
+      font-size:18px;
+      box-sizing:border-box;
+      outline:none;
+    }
+    textarea{min-height:130px}
+    button{
+      width:100%;
+      border:0;
+      border-radius:18px;
+      padding:16px;
+      font-size:17px;
+      font-weight:800;
+      background:#155eef;
+      color:white;
+      margin-top:12px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    .metric{
+      background:white;
+      border-radius:18px;
+      padding:14px;
+      border:1px solid #eaecf0;
+    }
+    .metric small{
+      color:#667085;
+      display:block;
+      margin-bottom:4px;
+    }
+    .metric strong{
+      font-size:22px;
+    }
+    .slider{
+      width:100%;
+      margin:16px 0;
+    }
+    .big-number{
+      font-size:42px;
+      font-weight:900;
+      color:#155eef;
+      transition:.25s;
+    }
+    .result{
+      background:#ecfdf3;
+      border:1px solid #abefc6;
+      border-radius:22px;
+      padding:16px;
+      margin-top:14px;
+      animation:pop .25s ease;
+    }
+    @keyframes pop{
+      from{transform:scale(.97);opacity:.6}
+      to{transform:scale(1);opacity:1}
+    }
+    .tank{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      background:white;
+      border:1px solid #eaecf0;
+      border-radius:16px;
+      padding:12px;
+      margin-top:10px;
+    }
+    .tank b{color:#155eef}
+    .screen-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:18px;
+    }
+    .step-pill{
+      background:#e5efff;
+      color:#0f4ef7;
+      font-weight:700;
+      padding:6px 14px;
+      border-radius:999px;
+      font-size:13px;
+    }
+    .summary-panel{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      background:#111827;
+      color:white;
+      border-radius:24px;
+      padding:18px;
+      margin-top:18px;
+    }
+    .summary-panel .metric{
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:18px;
+      padding:14px;
+    }
+    .summary-panel .metric small{
+      color:#94a3b8;
+      display:block;
+      margin-bottom:6px;
+    }
+    .card-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:14px;
+      gap:12px;
+    }
+    .card-header h3{
+      margin:0;
+      font-size:16px;
+    }
+    .link-button{
+      background:none;
+      border:none;
+      color:#155eef;
+      font-weight:700;
+      cursor:pointer;
+      font-size:14px;
+      padding:0;
+      transition: color .2s ease, background .2s ease;
+    }
+    .link-button:hover{
+      color:#0c4f6d;
+    }
+    .link-button.active{
+      background:#d1fae5;
+      border:1px solid #34d399;
+      border-radius:999px;
+      color:#065f46;
+      padding:8px 16px;
+    }
+    .plan-tabs{
+      display:flex;
+      gap:10px;
+      margin-top:18px;
+      flex-wrap:wrap;
+    }
+    .plan-tab{
+      flex:1 1 100px;
+      border:1px solid #d1d5db;
+      border-radius:999px;
+      background:#f8fafc;
+      color:#0f172a;
+      font-weight:700;
+      padding:10px 14px;
+      text-align:center;
+      cursor:pointer;
+      min-width:90px;
+    }
+    .plan-tab.active{
+      background:#d1fae5;
+      border-color:#34d399;
+      color:#065f46;
+    }
+    .plan-card{
+      background:#ecfdf5;
+      border:1px solid #d1fae5;
+      border-radius:24px;
+      padding:18px;
+      margin-top:18px;
+    }
+    .plan-title-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:14px;
+    }
+    .plan-plan-volume{
+      font-size:32px;
+      font-weight:900;
+      color:#047857;
+      margin:6px 0 0;
+    }
+    .plan-plan-info{
+      color:#475569;
+      font-size:14px;
+    }
+    .plan-step{
+      display:grid;
+      grid-template-columns:28px 1fr auto;
+      gap:12px;
+      align-items:center;
+      padding:14px 0;
+      border-bottom:1px solid #dbeafe;
+    }
+    .plan-step:last-child{
+      border-bottom:none;
+    }
+    .step-badge{
+      width:28px;
+      height:28px;
+      border-radius:999px;
+      background:#eff6ff;
+      color:#1d4ed8;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+    }
+    .plan-step strong{
+      display:block;
+      font-size:15px;
+    }
+    .plan-step small{
+      display:block;
+      color:#64748b;
+      margin-top:4px;
+    }
+    .plan-note{
+      background:#fef3c7;
+      border:1px solid #fde68a;
+      border-radius:18px;
+      padding:14px;
+      margin-top:18px;
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      color:#92400e;
+    }
+    .plan-note-icon{
+      font-size:20px;
+      line-height:1;
+    }
+    .primary-action{
+      margin-top:18px;
+    }
+    .product-list{
+      display:grid;
+      gap:0;
+      margin-top:12px;
+    }
+    .product-list .product{
+      display:grid;
+      grid-template-columns:36px minmax(0,1fr) auto;
+      gap:14px;
+      align-items:center;
+      padding:12px 0;
+      border-bottom:1px solid #e2e8f0;
+    }
+    .product-list .product:last-child{
+      border-bottom:none;
+    }
+    .product-number{
+      width:34px;
+      height:34px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:50%;
+      background:rgba(14,165,233,.15);
+      color:#0369a1;
+      font-weight:700;
+      font-size:14px;
+    }
+    .product-detail{
+      min-width:0;
+    }
+    .product-detail strong{
+      display:block;
+      font-size:15px;
+      color:#0f172a;
+      line-height:1.2;
+    }
+    .product-dose{
+      text-align:right;
+      font-size:14px;
+      font-weight:700;
+      color:#0f172a;
+      min-width:90px;
+      white-space:nowrap;
+    }
+    .tank-buttons{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin-top:12px;
+    }
+    .tank-button{
+      border-radius:18px;
+      padding:16px 0;
+      font-weight:800;
+      font-size:15px;
+      cursor:pointer;
+      min-height:84px;
+      transition:.2s;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      text-align:center;
+    }
+    .tank-button small{
+      font-size:13px;
+      font-weight:600;
+      color:inherit;
+      opacity:.9;
+    }
+    .tank-button.filled{
+      background:#0f9d58;
+      border:1px solid #0f9d58;
+      color:white;
+    }
+    .tank-button.rest{
+      background:#f8fafc;
+      border:1px solid #cbd5e1;
+      color:#334155;
+    }
+    .tank-button.filled:hover{
+      background:#0b7f45;
+      border-color:#0b7f45;
+    }
+    .tank-button.rest:hover{
+      background:#eef2ff;
+    }
+    .primary-action{
+      margin-top:18px;
+    }
+    .hidden{display:none}
+    .nav{
+      display:flex;
+      justify-content:space-around;
+      margin-top:20px;
+      color:#667085;
+      font-size:13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <div class="top">
+      <div class="brand">⚗️ Caldo IA</div>
+      <div>?</div>
+    </div>
+
+    <!-- PANTALLA 1 -->
+    <section id="screen1">
+      <div class="card">
+        <h1>1. Subí tu receta</h1>
+        <p>Sacá una foto, subí una captura o pegá la receta.</p>
+
+        <div class="card">
+          <strong>📷 Tomar foto o arrastrá la imagen acá</strong>
+          <p>IA</p>
+          <small>La IA detectará productos y dosis. Por ahora pegamos texto; luego conectamos OCR.</small>
+        </div>
+
+        <textarea id="recipe">Glifosato 48% 2 L/ha
+2,4D Amida 0.65 L/ha
+Dicamba 48% 0.20 L/ha
+Coadyuvante 75 cc/ha
+Finesse 15 g/ha</textarea>
+
+        <button onclick="runAIExtraction()" style="background:#10b981;">Detectar con IA</button>
+        <button onclick="goToScreen2()">Convertir en calculadora →</button>
+
+        <div id="aiExtracted" class="card hidden" style="margin-top:18px;">
+          <h3>Extracción con IA</h3>
+          <div id="aiInfo" style="margin-bottom:12px;color:#334155;font-size:14px;"></div>
+          <div id="aiProductList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANTALLA 2 -->
+    <section id="screen2" class="hidden">
+      <div class="card">
+        <h2>2. Datos de aplicación</h2>
+
+        <div class="grid">
+          <div>
+            <label>Ha a aplicar</label>
+            <input id="hectareas" type="number" inputmode="decimal" value="100" oninput="calculate()" />
+          </div>
+
+          <div>
+            <label>Capacidad tanque</label>
+            <input id="tanque" type="number" inputmode="decimal" value="3200" oninput="calculate()" />
+          </div>
+        </div>
+
+        <div style="margin-top:18px">
+          <label>Litros por ha</label>
+          <div class="big-number"><span id="ltsHaLabel">47</span> L/ha</div>
+          <input class="slider" id="ltsHa" type="range" min="20" max="120" value="47" oninput="calculate()" />
+        </div>
+      </div>
+
+      <div style="margin-top:16px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+        <button id="equalTankButton" class="link-button" onclick="toggleEqualTancada()">Tancada Iguales</button>
+        <small style="color:#475569;">Reparte el total en cargas iguales para todas las tancadas.</small>
+      </div>
+
+      <div class="result" id="resultBox">
+        <h3>Resultado operativo</h3>
+
+        <div class="grid">
+          <div class="metric">
+            <small>Caldo total</small>
+            <strong id="caldoTotal">0 L</strong>
+          </div>
+          <div class="metric">
+            <small>Tancadas</small>
+            <strong id="tancadas">0</strong>
+          </div>
+          <div class="metric">
+            <small>Ha por tanque</small>
+            <strong id="haTanque">0</strong>
+          </div>
+          <div class="metric">
+            <small>Última carga</small>
+            <strong id="ultimaCarga">0 L</strong>
+          </div>
+        </div>
+
+        <h3 style="margin-top:18px">Detalle por tancada</h3>
+        <div id="detalleTancadas"></div>
+      </div>
+
+      <button onclick="goToScreen1()">← Volver</button>
+      <button onclick="goToScreen3()">Ver resumen final →</button>
+    </section>
+    
+        <!-- PANTALLA 3 -->
+    <section id="screen3" class="hidden">
+      <div class="card">
+        <div class="screen-header">
+          <button class="link-button" onclick="goToScreen2()">←</button>
+          <span class="step-pill">Paso 3 de 4</span>
+          <div></div>
+        </div>
+
+        <h2>Resumen del cálculo</h2>
+        <p>Revisá los resultados</p>
+
+        <div class="summary-panel">
+          <div class="metric">
+            <small>Hectáreas</small>
+            <strong id="resHa">0</strong>
+          </div>
+          <div class="metric">
+            <small>L/ha</small>
+            <strong id="resLtsHa">0</strong>
+          </div>
+          <div class="metric">
+            <small>L totales</small>
+            <strong id="resCaldo">0</strong>
+          </div>
+        </div>
+        <div id="equalModeLabel" style="margin-top:12px;color:#047857;font-weight:700;"></div>
+
+        <div class="card" style="margin-top:18px;padding:18px;">
+          <div class="card-header">
+            <h3>Productos detectados</h3>
+            <button class="link-button" onclick="alert('Editar')">Editar</button>
+          </div>
+          <div id="productList" class="product-list"></div>
+        </div>
+
+        <div class="card" style="margin-top:18px;padding:18px;">
+          <div class="card-header">
+            <h3>Detalle por tancada</h3>
+          </div>
+          <div id="resDetalleTancadas"></div>
+        </div>
+
+        <button class="primary-action" onclick="goToScreen4()">Ver plan de carga →</button>
+      </div>
+    </section>
+
+    <section id="screen4" class="hidden">
+      <div class="card">
+        <div class="screen-header">
+          <button class="link-button" onclick="goToScreen3()">←</button>
+          <span class="step-pill">Paso 4 de 4</span>
+          <div></div>
+        </div>
+
+        <h2>Plan de carga</h2>
+        <p>Cómo cargar cada tancada</p>
+
+        <div id="planTabs" class="plan-tabs"></div>
+
+        <div class="plan-card">
+          <div class="plan-title-row">
+            <div>
+              <div class="step-pill" style="background:#d1fae5;color:#065f46;display:inline-block;padding:6px 12px;border-radius:999px;font-size:13px;font-weight:700;">Tancada <span id="planTankNumber">1</span> de <span id="planTankTotal">0</span></div>
+              <div class="plan-plan-volume" id="planTankLiters">0 L</div>
+              <div class="plan-plan-info" id="planTankArea">Cubre 0,0 ha</div>
+            </div>
+            <div style="font-size:24px;color:#047857;">📦</div>
+          </div>
+
+          <div id="planSteps" style="margin-top:18px;"></div>
+        </div>
+
+        <div class="plan-note">
+          <div class="plan-note-icon">⚠️</div>
+          <div>
+            <strong>Recordá:</strong> mantener agitación constante durante toda la aplicación.
+          </div>
+        </div>
+
+        <button class="primary-action" onclick="nextPlanTank()">Siguiente tancada →</button>
+      </div>
+    </section>
+
+      <div class="nav">
+        <span>Inicio</span>
+        <span>Historial</span>
+        <span>Recetas</span>
+        <span>Perfil</span>
+      </div>
+
+    </div>
+
+  <script>
+  function goToScreen3(){
+    document.getElementById("screen1").classList.add("hidden");
+    document.getElementById("screen2").classList.add("hidden");
+    document.getElementById("screen3").classList.remove("hidden");
+    document.getElementById("screen4").classList.add("hidden");
+    loadSummary();
+  }
+
+  function goToScreen4(){
+    document.getElementById("screen1").classList.add("hidden");
+    document.getElementById("screen2").classList.add("hidden");
+    document.getElementById("screen3").classList.add("hidden");
+    document.getElementById("screen4").classList.remove("hidden");
+    loadPlan(1);
+  }
+
+  function loadSummary(){
+    const hectareas = parseFloat(document.getElementById("hectareas").value) || 0;
+    const tanque = parseFloat(document.getElementById("tanque").value) || 0;
+    const ltsHa = parseFloat(document.getElementById("ltsHa").value) || 0;
+
+    const caldoTotal = hectareas * ltsHa;
+    const tancadas = Math.ceil(caldoTotal / tanque);
+
+    document.getElementById("resHa").innerText = hectareas.toFixed(0);
+    document.getElementById("resLtsHa").innerText = ltsHa.toFixed(0);
+    document.getElementById("resCaldo").innerText = caldoTotal.toFixed(0);
+
+    renderProductList(hectareas);
+    renderTancadaDetails(tancadas, tanque, ltsHa);
+
+    const equalLabel = document.getElementById('equalModeLabel');
+    if(equalLabel){
+      equalLabel.innerText = equalTancada ? 'Modo activo: Tancadas iguales' : '';
+    }
+  }
+
+  function formatProductTotal(value, unit){
+    const normalized = unit.toLowerCase();
+    if(normalized === 'cc' || normalized === 'ml'){
+      if(value >= 1000){
+        return {amount: (value / 1000).toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1}), unit:'L'};
+      }
+      return {amount: value.toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:0}), unit:normalized.toUpperCase()};
+    }
+    if(normalized === 'g'){
+      if(value >= 1000){
+        return {amount: (value / 1000).toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1}), unit:'kg'};
+      }
+      return {amount: value.toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:0}), unit:'g'};
+    }
+    return {amount: value.toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:0}), unit:normalized.toUpperCase()};
+  }
+
+  function parseRecipeProductsFromText(text, hectareas){
+    const unitMap = {
+      l: 'L', lt: 'L', lts: 'L', litro: 'L', litros: 'L', 
+      cc: 'CC', ccs: 'CC',
+      ml: 'ML', mls: 'ML',
+      g: 'G', gr: 'G', grs: 'G',
+      kg: 'KG', kgs: 'KG'
+    };
+
+    const lines = text
+      .split('\n')
+      .map(line => line.trim())
+      .filter(Boolean);
+
+    const pattern = /^\s*([^:]+?)\s*:?\s*([\d.,]+)\s*([a-zA-Z]{1,4})\s*(?:\/\s*ha|\s+por\s+ha)?(?:\s*\(.*\))?$/i;
+
+    return lines.reduce((products, line) => {
+      const match = line.match(pattern);
+      if(!match) return products;
+
+      const rawUnit = match[3].toLowerCase();
+      const normalizedUnit = unitMap[rawUnit];
+      if(!normalizedUnit) return products;
+
+      const name = match[1].trim();
+      const dose = parseFloat(match[2].replace(',', '.')) || 0;
+      const totalValue = dose * hectareas;
+      const formattedDose = dose.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2}).replace('.', ',');
+      const total = formatProductTotal(totalValue, normalizedUnit.toLowerCase());
+
+      products.push({
+        name,
+        doseValue: dose,
+        dose: formattedDose,
+        unit: normalizedUnit,
+        total: total.amount,
+        totalUnit: total.unit
+      });
+
+      return products;
+    }, []);
+  }
+
+  function parseRecipeProducts(hectareas){
+    return parseRecipeProductsFromText(document.getElementById('recipe').value, hectareas);
+  }
+
+  function extractRecipeInfo(){
+    const text = document.getElementById('recipe').value;
+    const normalized = text.toLowerCase();
+    const areaMatch = normalized.match(/([0-9]+(?:[.,][0-9]+)?)\s*(ha|hectárea|hectáreas)\b/);
+    const tankMatch = normalized.match(/([0-9]+(?:[.,][0-9]+)?)\s*(l|lts?|litros?)\s*(?:del\s*)?(?:tanque|capacidad|capacidad\s+del\s+tanque)\b/);
+    const ltsHaMatch = normalized.match(/([0-9]+(?:[.,][0-9]+)?)\s*(l|lts?|litros?)\s*\/\s*ha/);
+
+    const hectareas = areaMatch ? parseFloat(areaMatch[1].replace(',', '.')) : null;
+    const tanque = tankMatch ? parseFloat(tankMatch[1].replace(',', '.')) : null;
+    const ltsHa = ltsHaMatch ? parseFloat(ltsHaMatch[1].replace(',', '.')) : null;
+
+    const products = parseRecipeProductsFromText(text, hectareas || parseFloat(document.getElementById('hectareas').value) || 0);
+
+    return { products, hectareas, tanque, ltsHa };
+  }
+
+  function runAIExtraction(){
+    const extraction = extractRecipeInfo();
+    const info = [];
+    if(extraction.hectareas !== null) info.push(`Hectáreas detectadas: ${extraction.hectareas}`);
+    if(extraction.tanque !== null) info.push(`Capacidad tanque detectada: ${extraction.tanque} L`);
+    if(info.length === 0) info.push('No se detectaron valores de hectáreas ni tanque en el texto.');
+
+    const infoElem = document.getElementById('aiInfo');
+    infoElem.innerText = info.join(' · ');
+
+    if(extraction.hectareas !== null){
+      document.getElementById('hectareas').value = extraction.hectareas;
+    }
+    if(extraction.tanque !== null){
+      document.getElementById('tanque').value = extraction.tanque;
+    }
+    if(extraction.ltsHa !== null){
+      document.getElementById('ltsHa').value = extraction.ltsHa;
+      document.getElementById('ltsHaLabel').innerText = extraction.ltsHa;
+    }
+
+    calculate();
+
+    const productList = document.getElementById('aiProductList');
+    productList.innerHTML = '';
+    extraction.products.forEach((product, index) => {
+      const item = document.createElement('div');
+      item.className = 'product';
+      item.innerHTML = `
+        <div class="product-number">${index + 1}</div>
+        <div class="product-detail">
+          <strong>${product.name}</strong>
+        </div>
+        <div class="product-dose">${product.dose} ${product.unit}/ha</div>
+      `;
+      productList.appendChild(item);
+    });
+
+    document.getElementById('aiExtracted').classList.remove('hidden');
+  }
+
+  function renderProductList(hectareas){
+    const products = parseRecipeProducts(hectareas);
+    const list = document.getElementById("productList");
+    list.innerHTML = '';
+
+    products.forEach(product => {
+      const item = document.createElement('div');
+      item.className = 'product';
+      item.innerHTML = `
+        <div class="product-detail">
+          <strong>${product.name}</strong>
+          ${product.dose ? `<small>${product.dose} ${product.unit}/ha</small>` : ''}
+        </div>
+        <div style="text-align:right;">
+          <small>Total</small><br>
+          <strong>${product.total} ${product.totalUnit}</strong>
+        </div>
+      `;
+      list.appendChild(item);
+    });
+  }
+
+  function renderPlanTabs(tancadas, activeTank){
+    const container = document.getElementById('planTabs');
+    container.innerHTML = '';
+    const maxTabs = 4;
+    const visibleTabs = Math.min(tancadas, maxTabs);
+
+    for(let i = 1; i <= visibleTabs; i++){
+      const tab = document.createElement('button');
+      tab.type = 'button';
+      tab.className = 'plan-tab' + ((i === activeTank || (i === visibleTabs && activeTank > visibleTabs)) ? ' active' : '');
+      const tabText = equalTancada ? `Tancada ${i}` : (i === visibleTabs && tancadas > maxTabs ? 'Resto' : `Tancada ${i}`);
+      tab.textContent = tabText;
+      tab.onclick = () => loadPlan(i === visibleTabs && tancadas > maxTabs && !equalTancada ? visibleTabs + 1 : i);
+      container.appendChild(tab);
+    }
+
+    const total = document.getElementById('planTankTotal');
+    if(total){
+      total.innerText = tancadas;
+    }
+  }
+
+  function formatStepAmount(value, unit){
+    const normalized = unit.toLowerCase();
+    if(normalized === 'cc' || normalized === 'ml'){
+      const liters = value / 1000;
+      if(liters >= 1){
+        return `${liters.toFixed(1)} L`;
+      }
+      return `${Math.round(value)} ${normalized.toUpperCase()}`;
+    }
+    if(normalized === 'g'){
+      if(value >= 1000){
+        return `${(value / 1000).toFixed(1)} kg`;
+      }
+      return `${value.toFixed(0)} g`;
+    }
+    return `${value.toFixed(1)} ${unit}`;
+  }
+
+  function loadPlan(tabIndex = 1){
+    const hectareas = parseFloat(document.getElementById('hectareas').value) || 0;
+    const tanque = parseFloat(document.getElementById('tanque').value) || 0;
+    const ltsHa = parseFloat(document.getElementById('ltsHa').value) || 0;
+    const totalLitros = hectareas * ltsHa;
+    const tancadas = Math.ceil(totalLitros / tanque);
+    const litrosIguales = tancadas > 0 ? totalLitros / tancadas : 0;
+    const ultimaCarga = equalTancada ? litrosIguales : (totalLitros % tanque === 0 ? tanque : totalLitros % tanque);
+
+    const activeTank = Math.min(Math.max(1, tabIndex), tancadas);
+    window.activePlanTank = activeTank;
+    renderPlanTabs(tancadas, activeTank);
+
+    const litrosEstaTancada = equalTancada ? litrosIguales : (activeTank === tancadas ? ultimaCarga : tanque);
+    const haEstaTancada = litrosEstaTancada / ltsHa;
+
+    document.getElementById('planTankNumber').innerText = activeTank;
+    document.getElementById('planTankLiters').innerText = `${litrosEstaTancada.toFixed(0)} L`;
+    document.getElementById('planTankArea').innerText = `Cubre ${haEstaTancada.toFixed(1)} ha`;
+
+    const products = parseRecipeProducts(hectareas);
+    const tankSteps = [];
+    let productVolume = 0;
+
+    products.forEach(product => {
+      const amount = product.doseValue * haEstaTancada;
+      if(product.unit === 'L' || product.unit === 'CC' || product.unit === 'ML'){
+        const liters = product.unit === 'L' ? amount : (product.unit === 'CC' || product.unit === 'ML' ? amount / 1000 : amount);
+        productVolume += liters;
+      }
+      tankSteps.push({
+        title: product.name,
+        hint: `${product.dose} ${product.unit}/ha`,
+        amount: formatStepAmount(amount, product.unit)
+      });
+    });
+
+    const initialWater = Math.max(0, litrosEstaTancada - productVolume);
+    const planSteps = [
+      { title: 'Agua', hint: 'Llenar tanque hasta la mitad', amount: `${initialWater.toFixed(0)} L` },
+      ...tankSteps,
+      { title: 'Completar con agua', hint: `Hasta ${litrosEstaTancada.toFixed(0)} L`, amount: '' }
+    ];
+
+    const stepsContainer = document.getElementById('planSteps');
+    stepsContainer.innerHTML = '';
+    planSteps.forEach((step, index) => {
+      const div = document.createElement('div');
+      div.className = 'plan-step';
+      div.innerHTML = `
+        <div class="step-badge">${index + 1}</div>
+        <div>
+          <strong>${step.title}</strong>
+          <small>${step.hint}</small>
+        </div>
+        <div style="text-align:right; font-weight:700; color:#0f172a;">${step.amount}</div>
+      `;
+      stepsContainer.appendChild(div);
+    });
+
+    const button = document.querySelector('#screen4 .primary-action');
+    if(button){
+      button.innerText = activeTank < tancadas ? 'Siguiente tancada →' : 'Finalizar plan'
+    }
+  }
+
+  function nextPlanTank(){
+    const hectareas = parseFloat(document.getElementById('hectareas').value) || 0;
+    const tanque = parseFloat(document.getElementById('tanque').value) || 0;
+    const ltsHa = parseFloat(document.getElementById('ltsHa').value) || 0;
+    const totalLitros = hectareas * ltsHa;
+    const tancadas = Math.ceil(totalLitros / tanque);
+    const nextTank = Math.min((window.activePlanTank || 1) + 1, tancadas);
+    if(nextTank <= tancadas){
+      loadPlan(nextTank);
+    }
+  }
+
+  function renderTancadaDetails(tancadas, tanque, ltsHa){
+    const resumen = document.getElementById('resDetalleTancadas');
+    resumen.innerHTML = '';
+    const caldoTotal = parseFloat(document.getElementById('hectareas').value || 0) * ltsHa;
+    const litrosIguales = tancadas > 0 ? caldoTotal / tancadas : 0;
+    const ultimaCarga = equalTancada ? litrosIguales : (caldoTotal % tanque === 0 ? tanque : caldoTotal % tanque);
+
+    for(let i = 1; i <= tancadas; i++){
+      const litros = equalTancada ? litrosIguales : (i === tancadas ? ultimaCarga : tanque);
+      const haAplicadas = litros / ltsHa;
+      const div = document.createElement('div');
+      div.className = 'tank';
+      div.innerHTML = `
+        <div>
+          <b>Tancada ${i}</b><br>
+          ${haAplicadas.toFixed(1)} ha
+        </div>
+        <strong>${equalTancada ? litros.toFixed(1) : litros.toFixed(0)} L</strong>
+      `;
+      resumen.appendChild(div);
+    }
+  }
+
+  function renderTankButtons(tancadas, tanque){
+    const container = document.getElementById('tankButtons');
+    if(!container) return;
+    container.innerHTML = '';
+    const maxButtons = 3;
+    const visible = Math.min(tancadas, maxButtons);
+    const totalLitros = parseFloat(document.getElementById('hectareas').value || 0) * parseFloat(document.getElementById('ltsHa').value || 0);
+
+    for(let i = 1; i <= visible; i++){
+      const litros = i === tancadas ? totalLitros - (i - 1) * tanque : tanque;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'tank-button filled';
+      button.innerHTML = `
+        <span>${i}</span>
+        <small>${litros.toFixed(0)} L</small>
+      `;
+      button.onclick = () => selectTank(button);
+      container.appendChild(button);
+    }
+
+    if(tancadas > maxButtons){
+      const litrosRestantes = totalLitros - maxButtons * tanque;
+      const rest = document.createElement('button');
+      rest.type = 'button';
+      rest.className = 'tank-button rest';
+      rest.innerHTML = `
+        <span>Resto</span>
+        <small>${litrosRestantes.toFixed(0)} L</small>
+      `;
+      rest.onclick = () => selectTank(rest);
+      container.appendChild(rest);
+    }
+  }
+
+  function selectTank(button){
+    document.querySelectorAll('.tank-button').forEach(el => el.classList.remove('active'));
+    button.classList.add('active');
+  }
+
+    let equalTancada = false;
+
+    function toggleEqualTancada(){
+      equalTancada = !equalTancada;
+      const button = document.getElementById('equalTankButton');
+      if(equalTancada){
+        button.classList.add('active');
+      } else {
+        button.classList.remove('active');
+      }
+      calculate();
+    }
+
+    function goToScreen2(){
+      document.getElementById("screen1").classList.add("hidden");
+      document.getElementById("screen3").classList.add("hidden");
+      document.getElementById("screen2").classList.remove("hidden");
+      calculate();
+    }
+
+    function goToScreen1(){
+      document.getElementById("screen2").classList.add("hidden");
+      document.getElementById("screen3").classList.add("hidden");
+      document.getElementById("screen1").classList.remove("hidden");
+    }
+
+    function calculate(){
+      const hectareas = parseFloat(document.getElementById("hectareas").value) || 0;
+      const tanque = parseFloat(document.getElementById("tanque").value) || 0;
+      const ltsHa = parseFloat(document.getElementById("ltsHa").value) || 0;
+
+      document.getElementById("ltsHaLabel").innerText = ltsHa;
+
+      const caldoTotal = hectareas * ltsHa;
+      const tancadas = tanque > 0 ? Math.ceil(caldoTotal / tanque) : 0;
+      const litrosIguales = tancadas > 0 ? caldoTotal / tancadas : 0;
+      const ultimaCarga = equalTancada ? litrosIguales : (caldoTotal % tanque === 0 ? tanque : caldoTotal % tanque);
+      const haPorTanque = litrosIguales / ltsHa;
+
+      document.getElementById("caldoTotal").innerText = caldoTotal.toFixed(0) + " L";
+      document.getElementById("tancadas").innerText = tancadas;
+      document.getElementById("haTanque").innerText = haPorTanque.toFixed(1) + " ha";
+      document.getElementById("ultimaCarga").innerText = ultimaCarga.toFixed(0) + " L";
+
+      const detalle = document.getElementById("detalleTancadas");
+      detalle.innerHTML = "";
+
+      for(let i = 1; i <= tancadas; i++){
+        const litrosEstaTancada = equalTancada ? litrosIguales : (i === tancadas ? ultimaCarga : tanque);
+        const haEstaTancada = litrosEstaTancada / ltsHa;
+
+        const div = document.createElement("div");
+        div.className = "tank";
+        div.innerHTML = `
+          <div>
+            <b>Tancada ${i}</b><br>
+            ${haEstaTancada.toFixed(1)} ha
+          </div>
+          <strong>${litrosEstaTancada.toFixed(0)} L</strong>
+        `;
+        detalle.appendChild(div);
+      }
+    }
+
+    calculate();
+  </script>
+  <script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("/sw.js")
+        .then(function () {
+          console.log("Caldo IA offline activado");
+        })
+        .catch(function (error) {
+          console.log("Error activando offline:", error);
+        });
+    });
+  }
+  </script>
+</body>
+</html>
