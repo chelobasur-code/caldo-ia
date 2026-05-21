@@ -607,8 +607,8 @@ Finesse 15 g/ha</textarea>
             <strong id="resLtsHa">0</strong>
           </div>
           <div class="metric">
-            <small>L totales</small>
-            <strong id="resCaldo">0</strong>
+            <small>Unidad dosis</small>
+            <strong id="resUnits">-</strong>
           </div>
         </div>
         <div id="equalModeLabel" style="margin-top:12px;color:#047857;font-weight:700;"></div>
@@ -720,7 +720,7 @@ Finesse 15 g/ha</textarea>
         <div class="detail-panel">
           <div>
             <label>Dosis</label>
-            <input id="productDose" type="number" step="0.01" min="0" inputmode="decimal" oninput="updateDosePreview()" style="width:100%;padding:12px 14px;border:1px solid #d1d5db;border-radius:16px;outline:none;" />
+            <input id="productDose" type="text" inputmode="decimal" oninput="updateDosePreview()" style="width:100%;padding:12px 14px;border:1px solid #d1d5db;border-radius:16px;outline:none;" />
           </div>
           <div>
             <label>Unidad</label>
@@ -728,11 +728,16 @@ Finesse 15 g/ha</textarea>
               <option value="L/ha">L/ha</option>
               <option value="cc/ha">cc/ha</option>
               <option value="g/ha">g/ha</option>
+              <option value="kg/ha">kg/ha</option>
             </select>
           </div>
           <div>
             <label>Orden de carga</label>
-            <input id="productOrder" type="number" min="1" value="1" inputmode="numeric" style="width:100%;padding:12px 14px;border:1px solid #d1d5db;border-radius:16px;outline:none;" />
+            <div style="display:flex;gap:8px;align-items:center;">
+              <button type="button" onclick="changeOrder(-1)" style="width:44px;border-radius:12px;padding:10px;font-weight:800;">−</button>
+              <input id="productOrder" type="number" min="1" value="1" inputmode="numeric" style="flex:1;padding:12px 14px;text-align:center;border:1px solid #d1d5db;border-radius:16px;outline:none;" />
+              <button type="button" onclick="changeOrder(1)" style="width:44px;border-radius:12px;padding:10px;font-weight:800;">+</button>
+            </div>
           </div>
         </div>
 
@@ -868,6 +873,36 @@ async function cargarProductos(){
 
 cargarProductos();
 
+  // Helper to read numeric inputs accepting comma as decimal separator
+  function getNumber(idOrValue){
+    if(typeof idOrValue === 'number') return idOrValue;
+    let raw = '';
+    if(typeof idOrValue === 'string' && document.getElementById(idOrValue)){
+      raw = document.getElementById(idOrValue).value || '';
+    } else {
+      raw = String(idOrValue || '');
+    }
+    raw = String(raw).trim().replace(/\s+/g,'').replace(',', '.');
+    const n = parseFloat(raw);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function getInt(id){
+    const raw = String((document.getElementById(id) && document.getElementById(id).value) || '0').trim().replace(',', '.');
+    const n = parseInt(raw, 10);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function changeOrder(delta){
+    const el = document.getElementById('productOrder');
+    if(!el) return;
+    const curr = getInt('productOrder') || 1;
+    let next = curr + delta;
+    if(next < 1) next = 1;
+    el.value = next;
+    updateDosePreview();
+  }
+
   function renderRecipeBuilder(){
     renderMixList();
   }
@@ -882,14 +917,40 @@ cargarProductos();
     recipeProducts.sort((a,b) => a.order - b.order).forEach(product => {
       const item = document.createElement('div');
       item.className = 'mix-item';
-      item.innerHTML = `
-        <div class="order-badge">${product.order}</div>
-        <div class="mix-item-content">
-          <strong>${product.name}</strong><br>
-          <small>${product.dose} ${product.unit}</small>
-        </div>
-        <strong>${product.total.toFixed(1)} ${product.unit.replace('/ha','')}</strong>
-      `;
+
+      const badge = document.createElement('div');
+      badge.className = 'order-badge';
+      badge.textContent = product.order;
+
+      const content = document.createElement('div');
+      content.className = 'mix-item-content';
+      content.innerHTML = `<strong>${product.name}</strong><br><small>${product.dose} ${product.unit}</small>`;
+
+      const right = document.createElement('div');
+      right.style.display = 'flex';
+      right.style.alignItems = 'center';
+      right.style.gap = '8px';
+
+      const amount = document.createElement('strong');
+      amount.textContent = `${product.total.toFixed(1)} ${product.unit.replace('/ha','')}`;
+
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'link-button';
+      del.textContent = 'Eliminar';
+      del.onclick = () => {
+        if(confirm(`Eliminar ${product.name} de la mezcla?`)){
+          removeProductById(product.id);
+        }
+      };
+
+      right.appendChild(amount);
+      right.appendChild(del);
+
+      item.appendChild(badge);
+      item.appendChild(content);
+      item.appendChild(right);
+
       list.appendChild(item);
     });
   }
@@ -967,17 +1028,16 @@ cargarProductos();
     const doseInput = document.getElementById('productDose');
     const unitSelect = document.getElementById('productUnit');
     const orderInput = document.getElementById('productOrder');
-
-    doseInput.value = selectedCatalogProduct.defaultDose;
-    unitSelect.value = selectedCatalogProduct.unit;
+    doseInput.value = (selectedCatalogProduct.defaultDose !== undefined) ? String(selectedCatalogProduct.defaultDose).replace('.', ',') : '';
+    unitSelect.value = selectedCatalogProduct.unit || 'L/ha';
     orderInput.value = recipeProducts.length + 1;
     updateDosePreview();
   }
 
   function updateDosePreview(){
-    const hectareas = parseFloat(document.getElementById('hectareas').value) || 0;
-    const dose = parseFloat(document.getElementById('productDose').value) || 0;
-    const unit = document.getElementById('productUnit').value;
+    const hectareas = getNumber('hectareas');
+    const dose = getNumber('productDose');
+    const unit = document.getElementById('productUnit').value || '';
     const total = dose * hectareas;
     document.getElementById('productTotalAmount').innerText = `${total.toFixed(1)} ${unit.replace('/ha','')}`;
     document.getElementById('productTargetArea').innerText = `${hectareas.toFixed(1)} ha`;
@@ -985,10 +1045,10 @@ cargarProductos();
 
   function addProductToMix(){
     if(!selectedCatalogProduct) return;
-    const dose = parseFloat(document.getElementById('productDose').value) || 0;
-    const unit = document.getElementById('productUnit').value;
-    const order = parseInt(document.getElementById('productOrder').value) || (recipeProducts.length + 1);
-    const hectareas = parseFloat(document.getElementById('hectareas').value) || 0;
+    const dose = getNumber('productDose');
+    const unit = document.getElementById('productUnit').value || '';
+    const order = getInt('productOrder') || (recipeProducts.length + 1);
+    const hectareas = getNumber('hectareas');
     const total = dose * hectareas;
 
     recipeProducts.push({
@@ -1013,33 +1073,57 @@ cargarProductos();
       recipeProducts.sort((a,b) => a.order - b.order).forEach(product => {
         const item = document.createElement('div');
         item.className = 'mix-item';
-        item.innerHTML = `
-          <div>
-            <strong>${product.name}</strong><br>
-            <small>${product.dose} ${product.unit}</small>
-          </div>
-          <strong>${product.total.toFixed(1)} ${product.unit.replace('/ha','')}</strong>
-        `;
+
+        const left = document.createElement('div');
+        left.innerHTML = `<strong>${product.name}</strong><br><small>${product.dose} ${product.unit}</small>`;
+
+        const right = document.createElement('div');
+        right.style.display = 'flex';
+        right.style.alignItems = 'center';
+        right.style.gap = '8px';
+
+        const amount = document.createElement('strong');
+        amount.textContent = `${product.total.toFixed(1)} ${product.unit.replace('/ha','')}`;
+
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'link-button';
+        del.textContent = 'Eliminar';
+        del.onclick = () => {
+          if(confirm(`Eliminar ${product.name} de la mezcla?`)){
+            removeProductById(product.id);
+          }
+        };
+
+        right.appendChild(amount);
+        right.appendChild(del);
+
+        item.appendChild(left);
+        item.appendChild(right);
+
         summary.appendChild(item);
       });
     }
 
-    const totalVolume = parseFloat(document.getElementById('hectareas').value || 0) * parseFloat(document.getElementById('ltsHa').value || 0);
+    const totalVolume = getNumber('hectareas') * getNumber('ltsHa');
     document.getElementById('finalMixVolume').innerText = `${totalVolume.toFixed(0)} L`;
     document.getElementById('finalMixCount').innerText = recipeProducts.length.toString();
   }
 
   function loadSummary(){
-    const hectareas = parseFloat(document.getElementById("hectareas").value) || 0;
-    const tanque = parseFloat(document.getElementById("tanque").value) || 0;
-    const ltsHa = parseFloat(document.getElementById("ltsHa").value) || 0;
+    const hectareas = getNumber('hectareas');
+    const tanque = getNumber('tanque');
+    const ltsHa = getNumber('ltsHa');
 
     const caldoTotal = hectareas * ltsHa;
     const tancadas = Math.ceil(caldoTotal / tanque);
 
     document.getElementById("resHa").innerText = hectareas.toFixed(0);
     document.getElementById("resLtsHa").innerText = ltsHa.toFixed(0);
-    document.getElementById("resCaldo").innerText = caldoTotal.toFixed(0);
+    // Determine common unit among parsed products
+    const parsed = parseRecipeProducts(hectareas);
+    const units = Array.from(new Set(parsed.map(p => p.unit || '').filter(Boolean)));
+    document.getElementById("resUnits").innerText = units.length === 1 ? units[0] : (units.length === 0 ? '-' : 'varios');
 
     renderProductList(hectareas);
     renderTancadaDetails(tancadas, tanque, ltsHa);
@@ -1125,7 +1209,7 @@ cargarProductos();
     const tanque = tankMatch ? parseFloat(tankMatch[1].replace(',', '.')) : null;
     const ltsHa = ltsHaMatch ? parseFloat(ltsHaMatch[1].replace(',', '.')) : null;
 
-    const products = parseRecipeProductsFromText(text, hectareas || parseFloat(document.getElementById('hectareas').value) || 0);
+    const products = parseRecipeProductsFromText(text, hectareas || getNumber('hectareas') || 0);
 
     return { products, hectareas, tanque, ltsHa };
   }
@@ -1163,7 +1247,7 @@ cargarProductos();
         <div class="product-detail">
           <strong>${product.name}</strong>
         </div>
-        <div class="product-dose">${product.dose} ${product.unit}/ha</div>
+        <div class="product-dose">${product.dose} ${product.unit}</div>
       `;
       productList.appendChild(item);
     });
@@ -1182,7 +1266,7 @@ cargarProductos();
       item.innerHTML = `
         <div class="product-detail">
           <strong>${product.name}</strong>
-          ${product.dose ? `<small>${product.dose} ${product.unit}/ha</small>` : ''}
+          ${product.dose ? `<small>${product.dose} ${product.unit}</small>` : ''}
         </div>
         <div style="text-align:right;">
           <small>Total</small><br>
@@ -1234,9 +1318,9 @@ cargarProductos();
   }
 
   function loadPlan(tabIndex = 1){
-    const hectareas = parseFloat(document.getElementById('hectareas').value) || 0;
-    const tanque = parseFloat(document.getElementById('tanque').value) || 0;
-    const ltsHa = parseFloat(document.getElementById('ltsHa').value) || 0;
+    const hectareas = getNumber('hectareas');
+    const tanque = getNumber('tanque');
+    const ltsHa = getNumber('ltsHa');
     const totalLitros = hectareas * ltsHa;
     const tancadas = Math.ceil(totalLitros / tanque);
     const litrosIguales = tancadas > 0 ? totalLitros / tancadas : 0;
@@ -1265,8 +1349,10 @@ cargarProductos();
       }
       tankSteps.push({
         title: product.name,
-        hint: `${product.dose} ${product.unit}/ha`,
-        amount: formatStepAmount(amount, product.unit)
+        hint: `${product.dose} ${product.unit}`,
+        amount: formatStepAmount(amount, product.unit),
+        stepType: 'product',
+        productName: product.name
       });
     });
 
@@ -1282,14 +1368,43 @@ cargarProductos();
     planSteps.forEach((step, index) => {
       const div = document.createElement('div');
       div.className = 'plan-step';
-      div.innerHTML = `
-        <div class="step-badge">${index + 1}</div>
-        <div>
-          <strong>${step.title}</strong>
-          <small>${step.hint}</small>
-        </div>
-        <div style="text-align:right; font-weight:700; color:#0f172a;">${step.amount}</div>
-      `;
+
+      const badge = document.createElement('div');
+      badge.className = 'step-badge';
+      badge.textContent = String(index + 1);
+
+      const center = document.createElement('div');
+      const strong = document.createElement('strong');
+      strong.textContent = step.title;
+      const small = document.createElement('small');
+      small.textContent = step.hint || '';
+      center.appendChild(strong);
+      center.appendChild(small);
+
+      const right = document.createElement('div');
+      right.style.textAlign = 'right';
+      right.style.fontWeight = '700';
+      right.style.color = '#0f172a';
+      right.textContent = step.amount || '';
+
+      div.appendChild(badge);
+      div.appendChild(center);
+      div.appendChild(right);
+
+      if(step.stepType === 'product' && step.productName){
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'link-button';
+        btn.style.marginLeft = '8px';
+        btn.textContent = 'Eliminar';
+        btn.onclick = () => {
+          if(confirm(`Eliminar ${step.productName} de la mezcla?`)){
+            removeProductByName(step.productName);
+          }
+        };
+        right.appendChild(btn);
+      }
+
       stepsContainer.appendChild(div);
     });
 
@@ -1300,9 +1415,9 @@ cargarProductos();
   }
 
   function nextPlanTank(){
-    const hectareas = parseFloat(document.getElementById('hectareas').value) || 0;
-    const tanque = parseFloat(document.getElementById('tanque').value) || 0;
-    const ltsHa = parseFloat(document.getElementById('ltsHa').value) || 0;
+    const hectareas = getNumber('hectareas');
+    const tanque = getNumber('tanque');
+    const ltsHa = getNumber('ltsHa');
     const totalLitros = hectareas * ltsHa;
     const tancadas = Math.ceil(totalLitros / tanque);
     const nextTank = Math.min((window.activePlanTank || 1) + 1, tancadas);
@@ -1311,10 +1426,39 @@ cargarProductos();
     }
   }
 
+  function removeProductByName(name){
+    const idx = recipeProducts.findIndex(p => p.name === name);
+    if(idx !== -1){
+      const id = recipeProducts[idx].id;
+      removeProductById(id);
+      return;
+    }
+    // try remove from parsed recipe text by rebuilding recipe without that line
+    const recipeField = document.getElementById('recipe');
+    if(recipeField){
+      const lines = recipeField.value.split('\n').filter(l => !l.toLowerCase().startsWith(name.toLowerCase()));
+      recipeField.value = lines.join('\n');
+    }
+    loadPlan(window.activePlanTank || 1);
+  }
+
+  function removeProductById(id){
+    const idx = recipeProducts.findIndex(p => p.id === id);
+    if(idx === -1) return;
+    recipeProducts.splice(idx,1);
+    renderMixList();
+    renderMixTotal();
+    const recipeField = document.getElementById('recipe');
+    if(recipeField){
+      recipeField.value = buildRecipeText();
+    }
+    loadPlan(window.activePlanTank || 1);
+  }
+
   function renderTancadaDetails(tancadas, tanque, ltsHa){
     const resumen = document.getElementById('resDetalleTancadas');
     resumen.innerHTML = '';
-    const caldoTotal = parseFloat(document.getElementById('hectareas').value || 0) * ltsHa;
+    const caldoTotal = getNumber('hectareas') * ltsHa;
     const litrosIguales = tancadas > 0 ? caldoTotal / tancadas : 0;
     const ultimaCarga = equalTancada ? litrosIguales : (caldoTotal % tanque === 0 ? tanque : caldoTotal % tanque);
 
@@ -1340,7 +1484,7 @@ cargarProductos();
     container.innerHTML = '';
     const maxButtons = 3;
     const visible = Math.min(tancadas, maxButtons);
-    const totalLitros = parseFloat(document.getElementById('hectareas').value || 0) * parseFloat(document.getElementById('ltsHa').value || 0);
+    const totalLitros = getNumber('hectareas') * getNumber('ltsHa');
 
     for(let i = 1; i <= visible; i++){
       const litros = i === tancadas ? totalLitros - (i - 1) * tanque : tanque;
@@ -1405,11 +1549,11 @@ cargarProductos();
     }
 
     function calculate(){
-      const hectareas = parseFloat(document.getElementById("hectareas").value) || 0;
-      const tanque = parseFloat(document.getElementById("tanque").value) || 0;
-      const ltsHa = parseFloat(document.getElementById("ltsHa").value) || 0;
+      const hectareas = getNumber('hectareas');
+      const tanque = getNumber('tanque');
+      const ltsHa = getNumber('ltsHa');
 
-      document.getElementById("ltsHaLabel").innerText = ltsHa;
+      document.getElementById('ltsHaLabel').innerText = ltsHa;
 
       const caldoTotal = hectareas * ltsHa;
       const tancadas = tanque > 0 ? Math.ceil(caldoTotal / tanque) : 0;
