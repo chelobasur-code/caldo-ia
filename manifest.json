@@ -1,0 +1,10 @@
+{
+  "name": "Caldo IA",
+  "short_name": "Caldo IA",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#061b15",
+  "theme_color": "#08a63d",
+  "description": "Calculadora inteligente de caldos para aplicaciones agrícolas",
+  "icons": []
+}
