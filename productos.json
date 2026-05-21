@@ -29,4 +29,6 @@
   {"id":28,"nombre":"Aceite metilado / MSO","tipo":"Coadyuvante","unidad":"cc/ha","dosisDefault":500,"dosisMin":300,"dosisMax":1000,"ordenCarga":8,"keywords":["aceite","mso","metilado"]},
   {"id":29,"nombre":"Coadyuvante siliconado","tipo":"Coadyuvante","unidad":"cc/ha","dosisDefault":50,"dosisMin":30,"dosisMax":100,"ordenCarga":8,"keywords":["siliconado","coadyuvante"]},
   {"id":30,"nombre":"Corrector pH + secuestrante","tipo":"Corrector","unidad":"cc/100L","dosisDefault":75,"dosisMin":50,"dosisMax":150,"ordenCarga":1,"keywords":["corrector","ph","secuestrante","buffer"]}
+,
+  {"id":31,"nombre":"Glifosato (granulado)","tipo":"Herbicida","unidad":"kg/ha","dosisDefault":2,"dosisMin":1.5,"dosisMax":4,"ordenCarga":5,"keywords":["glifosato","glifo","granulado"]}
 ]
