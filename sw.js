@@ -30,6 +30,13 @@ self.addEventListener("activate", event => {
   self.clients.claim();
 });
 
+const FILES_TO_CACHE = [
+  "/",
+  "/index.html",
+  "/manifest.json",
+  "/productos.json"
+];
+
 self.addEventListener("fetch", event => {
   event.respondWith(
     caches.match(event.request).then(response => {
