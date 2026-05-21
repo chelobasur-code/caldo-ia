@@ -486,6 +486,32 @@
       color:#667085;
       font-size:13px;
     }
+    .toast-message{
+      position:fixed;
+      left:50%;
+      bottom:24px;
+      transform:translateX(-50%);
+      background:rgba(17,24,39,0.96);
+      color:white;
+      border-radius:16px;
+      padding:14px 18px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-size:14px;
+      z-index:9999;
+      box-shadow:0 20px 60px rgba(15,23,42,.25);
+    }
+    .toast-message button{
+      background:rgba(255,255,255,0.12);
+      border:1px solid rgba(255,255,255,0.28);
+      color:white;
+      border-radius:12px;
+      padding:8px 12px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    .toast-message.hidden{display:none;}
   </style>
 </head>
 <body>
@@ -778,6 +804,8 @@ Finesse 15 g/ha</textarea>
         <span>Perfil</span>
       </div>
 
+      <div id="toastMessage" class="toast-message hidden"></div>
+
     </div>
 
   <script>
@@ -841,6 +869,8 @@ let recipeProducts = [];
 let selectedCatalogProduct = null;
 let selectedCategory = 'Todos';
 let searchQuery = '';
+let lastRemovedProduct = null;
+let undoToastTimer = null;
 
 async function cargarProductos(){
   try{
@@ -937,12 +967,10 @@ cargarProductos();
       const del = document.createElement('button');
       del.type = 'button';
       del.className = 'link-button';
-      del.textContent = 'Eliminar';
-      del.onclick = () => {
-        if(confirm(`Eliminar ${product.name} de la mezcla?`)){
-          removeProductById(product.id);
-        }
-      };
+      del.style.padding = '10px';
+      del.textContent = '🗑️';
+      del.title = 'Eliminar producto';
+      del.onclick = () => removeProductById(product.id);
 
       right.appendChild(amount);
       right.appendChild(del);
@@ -1088,12 +1116,10 @@ cargarProductos();
         const del = document.createElement('button');
         del.type = 'button';
         del.className = 'link-button';
-        del.textContent = 'Eliminar';
-        del.onclick = () => {
-          if(confirm(`Eliminar ${product.name} de la mezcla?`)){
-            removeProductById(product.id);
-          }
-        };
+        del.style.padding = '10px';
+        del.textContent = '🗑️';
+        del.title = 'Eliminar producto';
+        del.onclick = () => removeProductById(product.id);
 
         right.appendChild(amount);
         right.appendChild(del);
@@ -1391,19 +1417,6 @@ cargarProductos();
       div.appendChild(center);
       div.appendChild(right);
 
-      if(step.stepType === 'product' && step.productName){
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'link-button';
-        btn.style.marginLeft = '8px';
-        btn.textContent = 'Eliminar';
-        btn.onclick = () => {
-          if(confirm(`Eliminar ${step.productName} de la mezcla?`)){
-            removeProductByName(step.productName);
-          }
-        };
-        right.appendChild(btn);
-      }
 
       stepsContainer.appendChild(div);
     });
@@ -1445,6 +1458,7 @@ cargarProductos();
   function removeProductById(id){
     const idx = recipeProducts.findIndex(p => p.id === id);
     if(idx === -1) return;
+    lastRemovedProduct = { product: recipeProducts[idx], index: idx };
     recipeProducts.splice(idx,1);
     renderMixList();
     renderMixTotal();
@@ -1453,6 +1467,38 @@ cargarProductos();
       recipeField.value = buildRecipeText();
     }
     loadPlan(window.activePlanTank || 1);
+    showUndoToast(lastRemovedProduct.product.name);
+  }
+
+  function showUndoToast(name){
+    clearTimeout(undoToastTimer);
+    const toast = document.getElementById('toastMessage');
+    if(!toast) return;
+    toast.innerHTML = `Producto ${name} eliminado <button type="button" onclick="undoRemoveProduct()">Deshacer</button>`;
+    toast.classList.remove('hidden');
+    undoToastTimer = setTimeout(() => {
+      toast.classList.add('hidden');
+      lastRemovedProduct = null;
+    }, 5000);
+  }
+
+  function undoRemoveProduct(){
+    if(!lastRemovedProduct) return;
+    recipeProducts.splice(lastRemovedProduct.index, 0, lastRemovedProduct.product);
+    renderMixList();
+    renderMixTotal();
+    const recipeField = document.getElementById('recipe');
+    if(recipeField){
+      recipeField.value = buildRecipeText();
+    }
+    hideUndoToast();
+  }
+
+  function hideUndoToast(){
+    clearTimeout(undoToastTimer);
+    const toast = document.getElementById('toastMessage');
+    if(toast) toast.classList.add('hidden');
+    lastRemovedProduct = null;
   }
 
   function renderTancadaDetails(tancadas, tanque, ltsHa){
