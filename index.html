@@ -7,8 +7,13 @@
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#08a63d">
   <style>
-    body{
+    html, body{
       margin:0;
+      padding:0;
+      min-height:100%;
+      overflow-x:hidden;
+    }
+    body{
       font-family: system-ui, sans-serif;
       background:#f4f7fb;
       color:#101828;
@@ -21,7 +26,9 @@
       min-height:100vh;
       background:#fff;
       padding:18px;
+      padding-bottom:120px;
       box-sizing:border-box;
+      overflow-x:hidden;
     }
     .top{
       display:flex;
@@ -88,7 +95,7 @@
     }
     .slider{
       width:100%;
-      margin:16px 0;
+      margin:12px 0;
     }
     .big-number{
       font-size:42px;
@@ -220,18 +227,20 @@
     }
     .category-tabs{
       display:flex;
-      gap:6px;
+      gap:8px;
       flex-wrap:wrap;
       margin-top:10px;
     }
     .category-tab{
+      flex:0 1 auto;
       border:1px solid #d1d5db;
       border-radius:999px;
       background:#f8fafc;
       color:#0f172a;
-      padding:6px 10px;
+      padding:8px 12px;
       cursor:pointer;
       font-size:12px;
+      white-space:nowrap;
     }
     .category-tab.active{
       background:#d1fae5;
@@ -283,9 +292,19 @@
       gap:12px;
       padding:14px 16px;
       border-bottom:1px solid #e5e7eb;
-      align-items:center;
+      align-items:flex-start;
       cursor:grab;
       touch-action:none;
+    }
+    .product-mix-summary .mix-item .mix-item-content{
+      min-width:0;
+      flex:1;
+    }
+    .product-mix-summary .mix-item .mix-item-content strong{
+      display:block;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
     .product-mix-summary .mix-item:last-child{
       border-bottom:none;
@@ -398,6 +417,7 @@
       text-align:center;
       cursor:pointer;
       min-width:90px;
+      white-space:nowrap;
     }
     .plan-tab.active{
       background:#d1fae5;
@@ -483,12 +503,13 @@
       margin-top:12px;
     }
     .product-list .product{
-      display:grid;
-      grid-template-columns:36px minmax(0,1fr) auto;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
       gap:14px;
-      align-items:flex-start;
       padding:12px 0;
       border-bottom:1px solid #e2e8f0;
+      flex-wrap:wrap;
     }
     .product-list .product:last-child{
       border-bottom:none;
@@ -507,12 +528,24 @@
     }
     .product-detail{
       min-width:0;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
     }
     .product-detail strong{
-      display:block;
       font-size:15px;
       color:#0f172a;
       line-height:1.4;
+      white-space:nowrap;
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .product-detail small{
+      color:#64748b;
+      font-size:14px;
+      white-space:nowrap;
     }
     .product-dose{
       text-align:right;
@@ -530,11 +563,12 @@
     }
     .tank-button{
       border-radius:18px;
-      padding:16px 0;
+      padding:16px 12px;
       font-weight:800;
       font-size:15px;
       cursor:pointer;
       min-height:84px;
+      min-width:110px;
       transition:.2s;
       display:flex;
       flex-direction:column;
@@ -542,6 +576,7 @@
       justify-content:center;
       gap:6px;
       text-align:center;
+      white-space:nowrap;
     }
     .tank-button small{
       font-size:13px;
@@ -571,11 +606,23 @@
     }
     .hidden{display:none}
     .nav{
+      position:fixed;
+      bottom:0;
+      left:0;
+      right:0;
       display:flex;
       justify-content:space-around;
-      margin-top:20px;
+      align-items:center;
+      gap:10px;
+      max-width:430px;
+      margin:0 auto;
+      padding:14px 18px;
+      background:#ffffff;
+      border-top:1px solid #e2e8f0;
       color:#667085;
       font-size:13px;
+      box-shadow:0 -8px 24px rgba(15,23,42,.08);
+      z-index:100;
     }
     .toast-message{
       position:fixed;
@@ -616,7 +663,7 @@
     <!-- PANTALLA 1 -->
     <section id="screen1">
       <div class="card">
-        <h1>1. Subí tu receta</h1>
+        <h1>Subí tu receta</h1>
         <p>Pegá tu receta o escribila directamente en el cuadro.</p>
 
         <textarea id="recipe" placeholder="Ejemplo:
@@ -630,7 +677,12 @@ Dicamba 48% 0.20 L/ha
 Coadyuvante 75 cc/ha
 Finesse 15 g/ha</textarea>
 
-        <button onclick="runAIExtraction()" style="background:#10b981;">Detectar con IA</button>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+          <button type="button" onclick="pasteRecipeFromClipboard()" style="flex:1;min-width:120px;background:#0f766e;">Pegar</button>
+          <button type="button" onclick="enableRecipeWriteMode()" style="flex:1;min-width:120px;background:#155eef;">Escribir</button>
+        </div>
+
+        <button onclick="runAIExtraction()" style="background:#10b981; margin-top:12px;">Detectar con IA</button>
         <button onclick="goToScreen2()">Convertir en calculadora →</button>
         <button onclick="goToScreen5()" style="background:#0f766e;">Armar receta →</button>
 
@@ -645,7 +697,13 @@ Finesse 15 g/ha</textarea>
     <!-- PANTALLA 2 -->
     <section id="screen2" class="hidden">
       <div class="card">
-        <h2>2. Datos de aplicación</h2>
+        <div class="screen-header">
+          <button class="back-button" onclick="goToScreen1()">←</button>
+          <div class="screen-header-title">
+            <h2>Datos de aplicación</h2>
+            <p>Ajustá la aplicación antes de ver el resumen.</p>
+          </div>
+        </div>
 
         <div class="grid">
           <div>
@@ -697,7 +755,6 @@ Finesse 15 g/ha</textarea>
         <div id="detalleTancadas"></div>
       </div>
 
-      <button onclick="goToScreen1()">← Volver</button>
       <button onclick="goToScreen3()">Ver resumen final →</button>
     </section>
     
@@ -731,7 +788,7 @@ Finesse 15 g/ha</textarea>
         <div class="card" style="margin-top:18px;padding:18px;">
           <div class="card-header">
             <h3>Productos detectados</h3>
-            <button class="link-button" onclick="alert('Editar')">Editar</button>
+            <button class="link-button" onclick="editRecipeFromSummary()">Editar</button>
           </div>
           <div id="productList" class="product-list"></div>
         </div>
@@ -1000,17 +1057,21 @@ async function cargarProductos(){
       name: p.nombre || p.name || p.producto || p.descripcion || 'Producto',
       category: p.tipo || p.category || p.categoria || 'Otros',
       defaultDose: (p.dosisDefault !== undefined) ? p.dosisDefault : (p.defaultDose || 0),
+      dosisMin: (p.dosisMin !== undefined) ? p.dosisMin : (p.minDose || 0),
+      dosisMax: (p.dosisMax !== undefined) ? p.dosisMax : (p.maxDose || 0),
+      order: (p.ordenCarga !== undefined) ? p.ordenCarga : (p.order || 0),
       unit: p.unidad || p.unit || 'L/ha',
+      keywords: Array.isArray(p.keywords) ? p.keywords : [],
       raw: p
     }));
     renderProductCatalog();
   }catch(e){
     console.log("No se pudo cargar productos.json", e);
     productCatalog = [
-      { id: 1, name: 'Fungicida X', category: 'Fungicida', defaultDose: 1.5, unit: 'L/ha' },
-      { id: 2, name: 'Herbicida Y', category: 'Herbicida', defaultDose: 0.8, unit: 'L/ha' },
-      { id: 3, name: 'Insecticida Z', category: 'Insecticida', defaultDose: 0.6, unit: 'L/ha' },
-      { id: 4, name: 'Coadyuvante A', category: 'Coadyuvante', defaultDose: 0.2, unit: 'L/ha' }
+      { id: 1, name: 'Fungicida X', category: 'Fungicida', defaultDose: 1.5, dosisMin:1, dosisMax:3, order:5, unit: 'L/ha', keywords:['fungicida'] },
+      { id: 2, name: 'Herbicida Y', category: 'Herbicida', defaultDose: 0.8, dosisMin:0.5, dosisMax:1.5, order:6, unit: 'L/ha', keywords:['herbicida'] },
+      { id: 3, name: 'Insecticida Z', category: 'Insecticida', defaultDose: 0.6, dosisMin:0.3, dosisMax:1.2, order:7, unit: 'L/ha', keywords:['insecticida'] },
+      { id: 4, name: 'Coadyuvante A', category: 'Coadyuvante', defaultDose: 0.2, dosisMin:0.1, dosisMax:0.5, order:8, unit: 'L/ha', keywords:['coadyuvante'] }
     ];
     productos = productCatalog.slice();
     renderProductCatalog();
@@ -1037,6 +1098,28 @@ cargarProductos();
     const raw = String((document.getElementById(id) && document.getElementById(id).value) || '0').trim().replace(',', '.');
     const n = parseInt(raw, 10);
     return isNaN(n) ? 0 : n;
+  }
+
+  async function pasteRecipeFromClipboard(){
+    const recipeField = document.getElementById('recipe');
+    if(!recipeField) return;
+    try {
+      const text = await navigator.clipboard.readText();
+      recipeField.value = text || recipeField.value;
+      recipeField.placeholder = 'Pega tu receta aquí';
+      showToastMessage(text ? 'Receta pegada desde el portapapeles' : 'No hay texto en el portapapeles');
+    } catch (error) {
+      showToastMessage('No se pudo leer el portapapeles');
+    }
+  }
+
+  function enableRecipeWriteMode(){
+    const recipeField = document.getElementById('recipe');
+    if(!recipeField) return;
+    recipeField.value = '';
+    recipeField.placeholder = 'Ejemplo:\nGlifosato 48% 2 L/ha\n2,4D Amida 0.65 L/ha\nDicamba 48% 0.20 L/ha\nCoadyuvante 75 cc/ha\nFinesse 15 g/ha';
+    recipeField.focus();
+    showToastMessage('Ya podés escribir tu receta');
   }
 
   function changeOrder(delta){
@@ -1140,10 +1223,11 @@ cargarProductos();
   }
 
   function renderProductCatalog(){
-    const tabs = ['Todos', 'Herbicida', 'Fungicida', 'Insecticida', 'Coadyuvante'];
+    const source = productos.length > 0 ? productos : productCatalog;
+    const categories = ['Todos', ...Array.from(new Set(source.map(product => (product.category || 'Otros').toString()))).sort()];
     const tabsContainer = document.getElementById('categoryTabs');
     tabsContainer.innerHTML = '';
-    tabs.forEach(category => {
+    categories.forEach(category => {
       const tab = document.createElement('button');
       tab.type = 'button';
       tab.className = 'category-tab' + (category === selectedCategory ? ' active' : '');
@@ -1155,11 +1239,12 @@ cargarProductos();
       tabsContainer.appendChild(tab);
     });
 
-    const source = productos.length > 0 ? productos : productCatalog;
     const filtered = source.filter(product => {
       const prodCat = (product.category || '').toString();
+      const query = (product.name || '').toLowerCase();
+      const keywords = Array.isArray(product.keywords) ? product.keywords.join(' ').toLowerCase() : '';
       const matchesCategory = selectedCategory === 'Todos' || prodCat.toLowerCase().includes(selectedCategory.toLowerCase());
-      const matchesQuery = (product.name || '').toLowerCase().includes(searchQuery) || prodCat.toLowerCase().includes(searchQuery);
+      const matchesQuery = query.includes(searchQuery) || prodCat.toLowerCase().includes(searchQuery) || keywords.includes(searchQuery);
       return matchesCategory && matchesQuery;
     });
 
@@ -1235,35 +1320,34 @@ cargarProductos();
     const order = getInt('productOrder') || (recipeProducts.length + 1);
     const hectareas = getNumber('hectareas');
     const total = dose * hectareas;
+    const formattedTotal = formatProductTotal(total, unit.replace('/ha','').toLowerCase());
     const existingIndex = recipeProducts.findIndex(p => p.id === selectedCatalogProduct.id);
+
+    const productEntry = {
+      id: selectedCatalogProduct.id,
+      name: selectedCatalogProduct.name,
+      dose,
+      doseValue: dose,
+      unit,
+      total,
+      totalUnit: formattedTotal.unit,
+      rawUnit: unit.replace('/ha','').toUpperCase(),
+      order
+    };
 
     if(editingProductIndex !== null){
       if(existingIndex !== -1 && existingIndex !== editingProductIndex){
         showToastMessage('No puede haber productos duplicados.');
         return;
       }
-      recipeProducts[editingProductIndex] = {
-        id: selectedCatalogProduct.id,
-        name: selectedCatalogProduct.name,
-        dose,
-        unit,
-        total,
-        order
-      };
+      recipeProducts[editingProductIndex] = productEntry;
       editingProductIndex = null;
     } else {
       if(existingIndex !== -1){
         showToastMessage('Este producto ya está agregado.');
         return;
       }
-      recipeProducts.push({
-        id: selectedCatalogProduct.id,
-        name: selectedCatalogProduct.name,
-        dose,
-        unit,
-        total,
-        order
-      });
+      recipeProducts.push(productEntry);
     }
 
     recipeProducts.sort((a,b) => a.order - b.order);
@@ -1291,21 +1375,26 @@ cargarProductos();
 
         const content = document.createElement('div');
         content.className = 'mix-item-content';
-        content.innerHTML = `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><strong>${product.name}</strong><span style="color:#64748b;font-size:14px;">${product.dose} ${product.unit}</span></div>`;
+        content.innerHTML = `<strong>${product.name}</strong>`;
 
         const right = document.createElement('div');
         right.style.display = 'flex';
         right.style.flexDirection = 'column';
         right.style.alignItems = 'flex-end';
         right.style.gap = '4px';
+        right.style.minWidth = '120px';
+
+        const doseText = document.createElement('strong');
+        doseText.textContent = `${product.dose} ${product.unit}`;
 
         const productTotal = product.dose * effectiveHectareas;
         const totalFormatted = formatProductTotal(productTotal, (product.rawUnit || product.unit.replace('/ha','')).toLowerCase());
         const totalLabel = document.createElement('span');
         totalLabel.style.color = '#475569';
         totalLabel.style.fontSize = '13px';
-        totalLabel.textContent = `${totalFormatted.amount} ${totalFormatted.unit}`;
+        totalLabel.textContent = `(${totalFormatted.amount} ${totalFormatted.unit})`;
 
+        right.appendChild(doseText);
         right.appendChild(totalLabel);
 
         item.appendChild(badge);
@@ -1390,8 +1479,8 @@ cargarProductos();
     document.getElementById("resHa").innerText = hectareas.toFixed(0);
     document.getElementById("resLtsHa").innerText = ltsHa.toFixed(0);
     // Determine common unit among parsed products
-    const parsed = parseRecipeProducts(hectareas);
-    const units = Array.from(new Set(parsed.map(p => p.unit || '').filter(Boolean)));
+    const products = getActiveRecipeProducts(hectareas);
+    const units = Array.from(new Set(products.map(p => p.unit || '').filter(Boolean)));
     document.getElementById("resUnits").innerText = units.length === 1 ? units[0] : (units.length === 0 ? '-' : 'varios');
 
     renderProductList(hectareas);
@@ -1432,9 +1521,15 @@ cargarProductos();
     const lines = text
       .split('\n')
       .map(line => line.trim())
-      .filter(Boolean);
+      .filter(Boolean)
+      .map(line => {
+        let cleaned = line.replace(/^[\s\-–—]+/, '');
+        cleaned = cleaned.replace(/\s+[\-–—]+\s+(?=[0-9])/g, ' ');
+        cleaned = cleaned.replace(/\s+[\-–—]+\s+$/g, '');
+        return cleaned;
+      });
 
-    const pattern = /^\s*([^:]+?)\s*:?\s*([\d.,]+)\s*([a-zA-Z]{1,4})\s*(?:\/\s*ha|\s+por\s+ha)?(?:\s*\(.*\))?$/i;
+    const pattern = /^\s*([^:]+?)\s*(?:[-–—]\s*)?([\d.,]+)\s*([a-zA-Z]{1,4})\s*(?:\/\s*ha|\s+por\s+ha)?(?:\s*\(.*\))?$/i;
 
     return lines.reduce((products, line) => {
       const match = line.match(pattern);
@@ -1445,7 +1540,7 @@ cargarProductos();
       if(!normalizedUnit) return products;
 
       const doseUnit = `${normalizedUnit}/ha`;
-      const name = match[1].trim();
+      const name = match[1].trim().replace(/[\-–—]+$/g, '').trim();
       const dose = parseFloat(match[2].replace(',', '.')) || 0;
       const totalValue = dose * hectareas;
       const formattedDose = dose.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2}).replace('.', ',');
@@ -1467,6 +1562,52 @@ cargarProductos();
 
   function parseRecipeProducts(hectareas){
     return parseRecipeProductsFromText(document.getElementById('recipe').value, hectareas);
+  }
+
+  function getActiveRecipeProducts(hectareas){
+    const currentHectareas = hectareas || getNumber('hectareas');
+    if(recipeProducts.length > 0){
+      return [...recipeProducts].sort((a,b) => a.order - b.order).map(product => {
+        const doseValue = product.doseValue !== undefined ? product.doseValue : getNumber(product.dose);
+        const rawUnit = product.rawUnit || product.unit.replace('/ha', '');
+        const totalAmount = product.total !== undefined ? product.total : doseValue * currentHectareas;
+        const totalUnit = product.totalUnit || formatProductTotal(totalAmount, rawUnit.toLowerCase()).unit;
+        return {
+          ...product,
+          doseValue,
+          total: totalAmount,
+          totalUnit,
+          rawUnit
+        };
+      });
+    }
+    return parseRecipeProducts(currentHectareas);
+  }
+
+  function editRecipeFromSummary(){
+    const hectareas = getNumber('hectareas') || 100;
+    const parsed = parseRecipeProducts(hectareas);
+    if(parsed.length > 0){
+      const source = productos.length > 0 ? productos : productCatalog;
+      recipeProducts = parsed.map((product, index) => {
+        const catalogMatch = source.find(item => item.name.toLowerCase() === product.name.toLowerCase());
+        return {
+          id: catalogMatch ? catalogMatch.id : `parsed-${index}`,
+          name: product.name,
+          dose: product.doseValue,
+          doseValue: product.doseValue,
+          unit: product.unit,
+          total: product.doseValue * hectareas,
+          order: index + 1,
+          rawUnit: product.rawUnit
+        };
+      });
+      const recipeField = document.getElementById('recipe');
+      if(recipeField){
+        recipeField.value = buildRecipeText();
+      }
+    }
+    goToScreen5();
   }
 
   function extractRecipeInfo(){
@@ -1506,28 +1647,63 @@ cargarProductos();
       document.getElementById('ltsHaLabel').innerText = extraction.ltsHa;
     }
 
+    if(extraction.products.length > 0){
+      recipeProducts = extraction.products.map((product, index) => {
+        const doseValue = product.doseValue;
+        const totalAmount = doseValue * (getNumber('hectareas') || 1);
+        const totalInfo = formatProductTotal(totalAmount, product.rawUnit.toLowerCase());
+        return {
+          id: `ai-${index}`,
+          name: product.name,
+          dose: doseValue,
+          doseValue,
+          unit: product.unit,
+          total: totalAmount,
+          totalUnit: totalInfo.unit,
+          rawUnit: product.rawUnit,
+          order: index + 1
+        };
+      });
+      const recipeField = document.getElementById('recipe');
+      if(recipeField){
+        recipeField.value = buildRecipeText();
+      }
+    }
+
     calculate();
 
     const productList = document.getElementById('aiProductList');
     productList.innerHTML = '';
+    const summary = document.createElement('div');
+    summary.className = 'product-mix-summary';
     extraction.products.forEach((product, index) => {
       const item = document.createElement('div');
-      item.className = 'product';
-      item.innerHTML = `
-        <div class="product-number">${index + 1}</div>
-        <div class="product-detail">
-          <strong>${product.name}</strong>
-        </div>
-        <div class="product-dose">${product.dose} ${product.unit}</div>
-      `;
-      productList.appendChild(item);
+      item.className = 'mix-item';
+
+      const badge = document.createElement('div');
+      badge.className = 'order-badge';
+      badge.textContent = index + 1;
+
+      const content = document.createElement('div');
+      content.className = 'mix-item-content';
+      content.innerHTML = `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><strong>${product.name}</strong><span style="color:#64748b;font-size:14px;">${product.dose} ${product.unit}</span></div>`;
+
+      const totalInfo = document.createElement('div');
+      totalInfo.style.textAlign = 'right';
+      totalInfo.innerHTML = `<strong>${product.dose} ${product.unit}</strong><span style="display:block;color:#475569;font-size:13px;margin-top:4px;">(${product.total} ${product.totalUnit})</span>`;
+
+      item.appendChild(badge);
+      item.appendChild(content);
+      item.appendChild(totalInfo);
+      summary.appendChild(item);
     });
+    productList.appendChild(summary);
 
     document.getElementById('aiExtracted').classList.remove('hidden');
   }
 
   function renderProductList(hectareas){
-    const products = parseRecipeProducts(hectareas);
+    const products = getActiveRecipeProducts(hectareas);
     const list = document.getElementById("productList");
     list.innerHTML = '';
 
@@ -1539,9 +1715,8 @@ cargarProductos();
           <strong>${product.name}</strong>
           ${product.dose ? `<small>${product.dose} ${product.unit}</small>` : ''}
         </div>
-        <div style="text-align:right;">
-          <small>Total</small><br>
-          <strong>${product.total} ${product.totalUnit}</strong>
+        <div style="text-align:right;min-width:120px;white-space:nowrap;">
+          <strong>${product.total} ${product.totalUnit || ''}</strong>
         </div>
       `;
       list.appendChild(item);
@@ -1608,7 +1783,7 @@ cargarProductos();
     document.getElementById('planTankLiters').innerText = `${litrosEstaTancada.toFixed(0)} L`;
     document.getElementById('planTankArea').innerText = `Cubre ${haEstaTancada.toFixed(1)} ha`;
 
-    const products = parseRecipeProducts(hectareas);
+    const products = getActiveRecipeProducts(hectareas);
     const tankSteps = [];
     let productVolume = 0;
 
@@ -1706,7 +1881,7 @@ cargarProductos();
     const litrosIguales = tancadas > 0 ? totalLitros / tancadas : 0;
     const prevLitros = equalTancada ? litrosIguales * (activeTank - 1) : (activeTank - 1) * tanque;
     const prevHa = ltsHa > 0 ? prevLitros / ltsHa : 0;
-    const products = parseRecipeProducts(hectareas);
+    const products = getActiveRecipeProducts(hectareas);
     const panel = document.getElementById('remainingProductsPanel');
     if(!panel) return;
 
@@ -1886,7 +2061,8 @@ cargarProductos();
 
   function buildRecipeText(){
     return recipeProducts.map(product => {
-      const doseText = product.dose.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2}).replace('.',',');
+      const doseAmount = product.doseValue !== undefined ? product.doseValue : product.dose;
+      const doseText = getNumber(doseAmount).toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2}).replace('.',',');
       return `${product.name} ${doseText} ${product.unit}`;
     }).join('\n');
   }
