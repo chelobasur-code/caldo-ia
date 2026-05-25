@@ -10,8 +10,10 @@
     html, body{
       margin:0;
       padding:0;
-      min-height:100%;
+      height:100%;
       overflow-x:hidden;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
     }
     body{
       font-family: system-ui, sans-serif;
@@ -26,9 +28,10 @@
       min-height:100vh;
       background:#fff;
       padding:18px;
-      padding-bottom:120px;
+      padding-bottom:140px;
       box-sizing:border-box;
       overflow-x:hidden;
+      overflow-y:visible;
     }
     .top{
       display:flex;
@@ -174,7 +177,7 @@
     }
     .summary-panel{
       display:grid;
-      grid-template-columns:repeat(3,1fr);
+      grid-template-columns:repeat(2,1fr);
       gap:12px;
       background:#111827;
       color:white;
@@ -237,7 +240,7 @@
       border-radius:999px;
       background:#f8fafc;
       color:#0f172a;
-      padding:8px 12px;
+      padding:6px 10px;
       cursor:pointer;
       font-size:12px;
       white-space:nowrap;
@@ -281,21 +284,39 @@
     }
     .product-mix-summary{
       margin-top:18px;
-      border-radius:18px;
+      border-radius:12px;
       border:1px solid #e5e7eb;
       background:#ffffff;
       overflow:hidden;
+      width:100%;
     }
     .product-mix-summary .mix-item{
-      display:flex;
-      justify-content:space-between;
+      display:grid;
+      grid-template-columns:64px 40px 1fr 120px;
       gap:12px;
-      padding:14px 16px;
+      padding:12px 14px;
       border-bottom:1px solid #e5e7eb;
-      align-items:flex-start;
-      cursor:grab;
+      align-items:center;
       touch-action:none;
+      min-width:0;
     }
+    .product-mix-summary .mix-item .actions{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      align-items:flex-start;
+    }
+    .product-mix-summary .mix-item .actions button{
+      width:120px;
+      text-align:left;
+      padding:8px 10px;
+      border-radius:12px;
+      font-weight:700;
+    }
+    .product-mix-summary .mix-item .actions button.edit{ background:#eef2ff; color:#1d4ed8; border:1px solid rgba(29,78,216,0.12); }
+    .product-mix-summary .mix-item .actions button.delete{ background:#fff7f7; color:#b91c1c; border:1px solid rgba(185,28,28,0.08); }
+    .product-mix-summary .mix-item .order-badge{ grid-column:2; justify-self:center; }
+    .product-mix-summary .mix-item .mix-item-content strong{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
     .product-mix-summary .mix-item .mix-item-content{
       min-width:0;
       flex:1;
@@ -309,12 +330,8 @@
     .product-mix-summary .mix-item:last-child{
       border-bottom:none;
     }
-    .mix-item.dragging{
-      opacity:.4;
-    }
-    .mix-item.drag-over{
-      background:#f8fafc;
-    }
+    .mix-item.dragging{ opacity:.4; }
+    .mix-item.drag-over{ background:#f8fafc; }
     .order-badge{
       width:30px;
       height:30px;
@@ -624,6 +641,9 @@
       box-shadow:0 -8px 24px rgba(15,23,42,.08);
       z-index:100;
     }
+    .nav-item{ display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:13px; color:#475569; }
+    .nav-item .nav-icon{ font-size:20px; line-height:1; }
+    .nav-item .nav-label{ font-size:12px; margin-top:4px; }
     .toast-message{
       position:fixed;
       left:50%;
@@ -666,16 +686,7 @@
         <h1>Subí tu receta</h1>
         <p>Pegá tu receta o escribila directamente en el cuadro.</p>
 
-        <textarea id="recipe" placeholder="Ejemplo:
-Glifosato 48% 2 L/ha
-2,4D Amida 0.65 L/ha
-Dicamba 48% 0.20 L/ha
-Coadyuvante 75 cc/ha
-Finesse 15 g/ha">Glifosato 48% 2 L/ha
-2,4D Amida 0.65 L/ha
-Dicamba 48% 0.20 L/ha
-Coadyuvante 75 cc/ha
-Finesse 15 g/ha</textarea>
+        <textarea id="recipe" placeholder="" ></textarea>
 
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
           <button type="button" onclick="pasteRecipeFromClipboard()" style="flex:1;min-width:120px;background:#0f766e;">Pegar</button>
@@ -720,7 +731,7 @@ Finesse 15 g/ha</textarea>
         <div style="margin-top:18px">
           <label>Litros por ha</label>
           <div class="big-number"><span id="ltsHaLabel">47</span> L/ha</div>
-          <input class="slider" id="ltsHa" type="range" min="20" max="120" value="47" oninput="calculate()" />
+          <input class="slider" id="ltsHa" type="range" min="0" max="120" value="47" oninput="calculate()" />
         </div>
       </div>
 
@@ -777,10 +788,6 @@ Finesse 15 g/ha</textarea>
           <div class="metric">
             <small>L/ha</small>
             <strong id="resLtsHa">0</strong>
-          </div>
-          <div class="metric">
-            <small>Unidad dosis</small>
-            <strong id="resUnits">-</strong>
           </div>
         </div>
         <div id="equalModeLabel" style="margin-top:12px;color:#047857;font-weight:700;"></div>
@@ -864,6 +871,9 @@ Finesse 15 g/ha</textarea>
         </div>
 
         <div class="plan-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <strong>Productos agregados: <span id="mixCount">0</span></strong>
+          </div>
           <div id="mixProductList" class="product-mix-summary"></div>
 
           <button class="primary-action" onclick="goToScreen6()">+ Agregar producto</button>
@@ -963,10 +973,22 @@ Finesse 15 g/ha</textarea>
     </section>
 
       <div class="nav">
-        <span>Inicio</span>
-        <span>Historial</span>
-        <span>Recetas</span>
-        <span>Perfil</span>
+        <div class="nav-item">
+          <div class="nav-icon">🏠</div>
+          <div class="nav-label">Inicio</div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">📋</div>
+          <div class="nav-label">Recetas</div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">🕘</div>
+          <div class="nav-label">Historial</div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-icon">👤</div>
+          <div class="nav-label">Perfil</div>
+        </div>
       </div>
 
       <div id="toastMessage" class="toast-message hidden"></div>
@@ -1143,13 +1165,46 @@ cargarProductos();
       list.innerHTML = '<div class="product-mix-empty">Aún no agregaste ningún producto. Presioná "Agregar producto" para comenzar tu mezcla.</div>';
       return;
     }
-
     const sortedProducts = [...recipeProducts].sort((a,b) => a.order - b.order);
     sortedProducts.forEach((product, index) => {
       const item = document.createElement('div');
       item.className = 'mix-item';
-      item.draggable = true;
       item.dataset.index = index;
+
+      // Actions (left column)
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'edit';
+      edit.textContent = '✏️ Editar';
+      edit.onclick = () => editRecipeProduct(index);
+
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'delete';
+      del.textContent = '🗑 Eliminar';
+      del.onclick = () => removeProductById(product.id);
+
+      const up = document.createElement('button');
+      up.type = 'button';
+      up.className = 'edit';
+      up.style.fontSize = '13px';
+      up.textContent = '▲ Subir';
+      up.onclick = () => { if(index > 0) reorderRecipeProducts(index, index - 1); };
+
+      const down = document.createElement('button');
+      down.type = 'button';
+      down.className = 'delete';
+      down.style.fontSize = '13px';
+      down.textContent = '▼ Bajar';
+      down.onclick = () => { if(index < sortedProducts.length - 1) reorderRecipeProducts(index, index + 1); };
+
+      actions.appendChild(edit);
+      actions.appendChild(del);
+      actions.appendChild(up);
+      actions.appendChild(down);
 
       const badge = document.createElement('div');
       badge.className = 'order-badge';
@@ -1157,64 +1212,25 @@ cargarProductos();
 
       const content = document.createElement('div');
       content.className = 'mix-item-content';
-      content.innerHTML = `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><strong>${product.name}</strong><span style="color:#64748b;font-size:14px;">${product.dose} ${product.unit}</span></div>`;
+      content.innerHTML = `<strong>${product.name}</strong><div style="color:#64748b;font-size:14px;">${product.dose} ${product.unit}</div>`;
 
       const right = document.createElement('div');
-      right.style.display = 'flex';
-      right.style.alignItems = 'center';
-      right.style.gap = '8px';
+      right.style.textAlign = 'right';
+      right.innerHTML = `<strong>${(product.total || (product.doseValue * getNumber('hectareas'))).toFixed ? (Number(product.total).toFixed(1)) : product.total} ${product.totalUnit || ''}</strong>`;
 
-      const edit = document.createElement('button');
-      edit.type = 'button';
-      edit.className = 'link-button';
-      edit.style.padding = '10px 12px';
-      edit.style.fontSize = '13px';
-      edit.textContent = 'Editar';
-      edit.onclick = () => editRecipeProduct(index);
+      // Touch fallback: mark index for possible reorder via UI
+      item.ontouchstart = () => { draggedRecipeIndex = index; };
+      item.ontouchend = () => { draggedRecipeIndex = null; };
 
-      const del = document.createElement('button');
-      del.type = 'button';
-      del.className = 'link-button';
-      del.style.padding = '10px 12px';
-      del.style.fontSize = '13px';
-      del.textContent = '🗑️';
-      del.title = 'Eliminar producto';
-      del.onclick = () => removeProductById(product.id);
-
-      right.appendChild(edit);
-      right.appendChild(del);
-
-      item.ondragstart = (e) => {
-        draggedRecipeIndex = index;
-        item.classList.add('dragging');
-        e.dataTransfer.effectAllowed = 'move';
-      };
-      item.ondragend = () => {
-        item.classList.remove('dragging');
-        draggedRecipeIndex = null;
-      };
-      item.ondragover = (e) => {
-        e.preventDefault();
-      };
-      item.ondragenter = () => {
-        if(index !== draggedRecipeIndex) item.classList.add('drag-over');
-      };
-      item.ondragleave = () => {
-        item.classList.remove('drag-over');
-      };
-      item.ondrop = (e) => {
-        e.preventDefault();
-        item.classList.remove('drag-over');
-        if(draggedRecipeIndex === null || draggedRecipeIndex === index) return;
-        reorderRecipeProducts(draggedRecipeIndex, index);
-      };
-
+      item.appendChild(actions);
       item.appendChild(badge);
       item.appendChild(content);
       item.appendChild(right);
 
       list.appendChild(item);
     });
+
+    updateMixCount();
   }
 
   function updateProductSearch(){
@@ -1336,24 +1352,29 @@ cargarProductos();
     };
 
     if(editingProductIndex !== null){
-      if(existingIndex !== -1 && existingIndex !== editingProductIndex){
-        showToastMessage('No puede haber productos duplicados.');
-        return;
-      }
-      recipeProducts[editingProductIndex] = productEntry;
+      // If editing, remove old entry then insert new at requested order
+      const old = recipeProducts[editingProductIndex];
+      recipeProducts.splice(editingProductIndex, 1);
+      // shift others down if necessary
+      recipeProducts.forEach(p => { if(p.order >= order) p.order = p.order + 1; });
+      recipeProducts.push(productEntry);
       editingProductIndex = null;
     } else {
       if(existingIndex !== -1){
         showToastMessage('Este producto ya está agregado.');
         return;
       }
+      // shift existing products to make room for the requested order
+      recipeProducts.forEach(p => { if(p.order >= order) p.order = p.order + 1; });
       recipeProducts.push(productEntry);
     }
 
+    // Normalize ordering
     recipeProducts.sort((a,b) => a.order - b.order);
     recipeProducts.forEach((prod, idx) => prod.order = idx + 1);
 
     selectedCatalogProduct = null;
+    updateMixCount();
     goToScreen5();
   }
 
@@ -1377,7 +1398,7 @@ cargarProductos();
         content.className = 'mix-item-content';
         content.innerHTML = `<strong>${product.name}</strong>`;
 
-        const right = document.createElement('div');
+          const right = document.createElement('div');
         right.style.display = 'flex';
         right.style.flexDirection = 'column';
         right.style.alignItems = 'flex-end';
@@ -1397,6 +1418,8 @@ cargarProductos();
         right.appendChild(doseText);
         right.appendChild(totalLabel);
 
+        const placeholder = document.createElement('div');
+        item.appendChild(placeholder);
         item.appendChild(badge);
         item.appendChild(content);
         item.appendChild(right);
@@ -1480,8 +1503,6 @@ cargarProductos();
     document.getElementById("resLtsHa").innerText = ltsHa.toFixed(0);
     // Determine common unit among parsed products
     const products = getActiveRecipeProducts(hectareas);
-    const units = Array.from(new Set(products.map(p => p.unit || '').filter(Boolean)));
-    document.getElementById("resUnits").innerText = units.length === 1 ? units[0] : (units.length === 0 ? '-' : 'varios');
 
     renderProductList(hectareas);
     renderTancadaDetails(tancadas, tanque, ltsHa);
@@ -1524,6 +1545,8 @@ cargarProductos();
       .filter(Boolean)
       .map(line => {
         let cleaned = line.replace(/^[\s\-–—]+/, '');
+        // Remove leading numeric order like "1. ", "10. ", etc.
+        cleaned = cleaned.replace(/^\s*\d+\.\s*/, '');
         cleaned = cleaned.replace(/\s+[\-–—]+\s+(?=[0-9])/g, ' ');
         cleaned = cleaned.replace(/\s+[\-–—]+\s+$/g, '');
         return cleaned;
@@ -1668,6 +1691,8 @@ cargarProductos();
       if(recipeField){
         recipeField.value = buildRecipeText();
       }
+        renderMixList();
+        updateMixCount();
     }
 
     calculate();
@@ -1676,10 +1701,19 @@ cargarProductos();
     productList.innerHTML = '';
     const summary = document.createElement('div');
     summary.className = 'product-mix-summary';
+    // Header row
+    const header = document.createElement('div');
+    header.className = 'mix-item';
+    header.style.fontWeight = '800';
+    header.style.background = '#f8fafc';
+    header.innerHTML = `<div style="display:flex;flex-direction:column;gap:4px;"></div><div style="text-align:center;">Orden</div><div>Producto</div><div style="text-align:right;">Dosis · Total</div>`;
+    summary.appendChild(header);
     extraction.products.forEach((product, index) => {
       const item = document.createElement('div');
       item.className = 'mix-item';
 
+      const placeholder = document.createElement('div');
+      // order badge
       const badge = document.createElement('div');
       badge.className = 'order-badge';
       badge.textContent = index + 1;
@@ -1692,6 +1726,7 @@ cargarProductos();
       totalInfo.style.textAlign = 'right';
       totalInfo.innerHTML = `<strong>${product.dose} ${product.unit}</strong><span style="display:block;color:#475569;font-size:13px;margin-top:4px;">(${product.total} ${product.totalUnit})</span>`;
 
+      item.appendChild(placeholder);
       item.appendChild(badge);
       item.appendChild(content);
       item.appendChild(totalInfo);
@@ -1957,6 +1992,7 @@ cargarProductos();
     recipeProducts.splice(idx,1);
     renderMixList();
     renderMixTotal();
+    updateMixCount();
     const recipeField = document.getElementById('recipe');
     if(recipeField){
       recipeField.value = buildRecipeText();
@@ -1982,6 +2018,7 @@ cargarProductos();
     recipeProducts.splice(lastRemovedProduct.index, 0, lastRemovedProduct.product);
     renderMixList();
     renderMixTotal();
+    updateMixCount();
     const recipeField = document.getElementById('recipe');
     if(recipeField){
       recipeField.value = buildRecipeText();
@@ -2065,6 +2102,13 @@ cargarProductos();
       const doseText = getNumber(doseAmount).toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2}).replace('.',',');
       return `${product.name} ${doseText} ${product.unit}`;
     }).join('\n');
+  }
+
+  function updateMixCount(){
+    const el = document.getElementById('mixCount');
+    if(el) el.innerText = String(recipeProducts.length || 0);
+    const finalCount = document.getElementById('finalMixCount');
+    if(finalCount) finalCount.innerText = String(recipeProducts.length || 0);
   }
 
   function finishRecipeBuild(){
