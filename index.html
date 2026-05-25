@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Caldo IA</title>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#08a63d">
@@ -12,6 +12,8 @@
       font-family: system-ui, sans-serif;
       background:#f4f7fb;
       color:#101828;
+      -webkit-text-size-adjust:100%;
+      touch-action:manipulation;
     }
     .app{
       max-width:430px;
@@ -45,9 +47,13 @@
       border:1px solid #d0d5dd;
       border-radius:16px;
       padding:14px;
-      font-size:18px;
+      font-size:16px;
       box-sizing:border-box;
       outline:none;
+      touch-action: manipulation;
+    }
+    button, select{
+      touch-action: manipulation;
     }
     textarea{min-height:130px}
     button{
@@ -94,8 +100,8 @@
       background:#ecfdf3;
       border:1px solid #abefc6;
       border-radius:22px;
-      padding:16px;
-      margin-top:14px;
+      padding:14px;
+      margin-top:12px;
       animation:pop .25s ease;
     }
     @keyframes pop{
@@ -115,16 +121,41 @@
     .tank b{color:#155eef}
     .screen-header{
       display:flex;
-      align-items:center;
-      justify-content:center;
-      position:relative;
+      align-items:flex-start;
+      gap:14px;
       margin-bottom:18px;
     }
-    .screen-header .link-button{
-      position:absolute;
-      left:0;
-      top:50%;
-      transform:translateY(-50%);
+    .back-button{
+      width:42px;
+      height:42px;
+      border-radius:50%;
+      border:1px solid #d1d5db;
+      background:white;
+      color:#0f172a;
+      font-size:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      box-shadow:0 4px 10px rgba(15,23,42,.08);
+      transition:background .2s ease, border-color .2s ease;
+      flex-shrink:0;
+    }
+    .back-button:hover{
+      background:#f8fafc;
+      border-color:#cbd5e1;
+    }
+    .screen-header-title{
+      flex:1;
+      min-width:0;
+    }
+    .screen-header-title h2{
+      margin:0 0 6px;
+      font-size:22px;
+    }
+    .screen-header-title p{
+      margin:0;
+      color:#475569;
     }
     .step-pill{
       background:#e5efff;
@@ -253,6 +284,8 @@
       padding:14px 16px;
       border-bottom:1px solid #e5e7eb;
       align-items:center;
+      cursor:grab;
+      touch-action:none;
     }
     .product-mix-summary .mix-item:last-child{
       border-bottom:none;
@@ -453,7 +486,7 @@
       display:grid;
       grid-template-columns:36px minmax(0,1fr) auto;
       gap:14px;
-      align-items:center;
+      align-items:flex-start;
       padding:12px 0;
       border-bottom:1px solid #e2e8f0;
     }
@@ -479,7 +512,7 @@
       display:block;
       font-size:15px;
       color:#0f172a;
-      line-height:1.2;
+      line-height:1.4;
     }
     .product-dose{
       text-align:right;
@@ -584,15 +617,14 @@
     <section id="screen1">
       <div class="card">
         <h1>1. Subí tu receta</h1>
-        <p>Sacá una foto, subí una captura o pegá la receta.</p>
+        <p>Pegá tu receta o escribila directamente en el cuadro.</p>
 
-        <div class="card">
-          <strong>📷 Tomar foto o arrastrá la imagen acá</strong>
-          <p>IA</p>
-          <small>La IA detectará productos y dosis. Por ahora pegamos texto; luego conectamos OCR.</small>
-        </div>
-
-        <textarea id="recipe">Glifosato 48% 2 L/ha
+        <textarea id="recipe" placeholder="Ejemplo:
+Glifosato 48% 2 L/ha
+2,4D Amida 0.65 L/ha
+Dicamba 48% 0.20 L/ha
+Coadyuvante 75 cc/ha
+Finesse 15 g/ha">Glifosato 48% 2 L/ha
 2,4D Amida 0.65 L/ha
 Dicamba 48% 0.20 L/ha
 Coadyuvante 75 cc/ha
@@ -634,7 +666,7 @@ Finesse 15 g/ha</textarea>
         </div>
       </div>
 
-      <div style="margin-top:16px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <div style="margin-top:12px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
         <button id="equalTankButton" class="link-button" onclick="toggleEqualTancada()">Tancada Iguales</button>
         <small style="color:#475569;">Reparte el total en cargas iguales para todas las tancadas.</small>
       </div>
@@ -673,13 +705,12 @@ Finesse 15 g/ha</textarea>
     <section id="screen3" class="hidden">
       <div class="card">
         <div class="screen-header">
-          <button class="link-button" onclick="goToScreen2()">←</button>
-          <span class="step-pill">Paso 3 de 4</span>
-          <div></div>
+          <button class="back-button" onclick="goToScreen2()">←</button>
+          <div class="screen-header-title">
+            <h2>Resumen del cálculo</h2>
+            <p>Revisá los resultados</p>
+          </div>
         </div>
-
-        <h2>Resumen del cálculo</h2>
-        <p>Revisá los resultados</p>
 
         <div class="summary-panel">
           <div class="metric">
@@ -719,13 +750,12 @@ Finesse 15 g/ha</textarea>
     <section id="screen4" class="hidden">
       <div class="card">
         <div class="screen-header">
-          <button class="link-button" onclick="goToScreen3()">←</button>
-          <span class="step-pill">Paso 4 de 4</span>
-          <div></div>
+          <button class="back-button" onclick="goToScreen3()">←</button>
+          <div class="screen-header-title">
+            <h2>Plan de carga</h2>
+            <p>Cómo cargar cada tancada</p>
+          </div>
         </div>
-
-        <h2>Plan de carga</h2>
-        <p>Cómo cargar cada tancada</p>
 
         <div id="planTabs" class="plan-tabs"></div>
 
@@ -752,6 +782,7 @@ Finesse 15 g/ha</textarea>
           </div>
         </div>
 
+        <button type="button" onclick="nextPlanTank()" style="margin-top:18px;background:#155eef;color:white;border:none;border-radius:18px;padding:16px;font-size:17px;font-weight:800;cursor:pointer;">Siguiente tancada →</button>
       </div>
     </section>
 
@@ -768,12 +799,12 @@ Finesse 15 g/ha</textarea>
     <section id="screen5" class="hidden">
       <div class="card">
         <div class="screen-header">
-          <button class="link-button" onclick="goToScreen1()">←</button>
-          <span class="step-pill">Receta 1 de 4</span>
+          <button class="back-button" onclick="goToScreen1()">←</button>
+          <div class="screen-header-title">
+            <h2>Armado de receta</h2>
+            <p>Agregá productos a la mezcla y revisá el contenido.</p>
+          </div>
         </div>
-
-        <h2>Armado de Receta</h2>
-        <p>Agregá productos a la mezcla y revisá el contenido.</p>
 
         <div class="plan-card">
           <div id="mixProductList" class="product-mix-summary"></div>
@@ -787,12 +818,12 @@ Finesse 15 g/ha</textarea>
     <section id="screen6" class="hidden">
       <div class="card">
         <div class="screen-header">
-          <button class="link-button" onclick="goToScreen5()">←</button>
-          <span class="step-pill">Receta 2 de 4</span>
+          <button class="back-button" onclick="goToScreen5()">←</button>
+          <div class="screen-header-title">
+            <h2>Buscar producto</h2>
+            <p>Seleccioná el producto que querés agregar a la mezcla.</p>
+          </div>
         </div>
-
-        <h2>Buscar producto</h2>
-        <p>Seleccioná el producto que querés agregar a la mezcla.</p>
 
         <input id="productSearch" type="text" placeholder="Buscar por producto o ingrediente" oninput="updateProductSearch()" style="width:100%;padding:12px 14px;border:1px solid #d1d5db;border-radius:16px;outline:none;margin-top:18px;" />
 
@@ -804,12 +835,12 @@ Finesse 15 g/ha</textarea>
     <section id="screen7" class="hidden">
       <div class="card">
         <div class="screen-header">
-          <button class="link-button" onclick="goToScreen6()">←</button>
-          <span class="step-pill">Receta 3 de 4</span>
+          <button class="back-button" onclick="goToScreen6()">←</button>
+          <div class="screen-header-title">
+            <h2>Definir dosis</h2>
+            <p>Ingresá la dosis por hectárea y el orden de carga.</p>
+          </div>
         </div>
-
-        <h2>Definir dosis</h2>
-        <p>Ingresá la dosis por hectárea y el orden de carga.</p>
 
         <div id="selectedProduct" class="selected-product"></div>
 
@@ -849,12 +880,12 @@ Finesse 15 g/ha</textarea>
     <section id="screen8" class="hidden">
       <div class="card">
         <div class="screen-header">
-          <button class="link-button" onclick="goToScreen5()">←</button>
-          <span class="step-pill">Receta 4 de 4</span>
+          <button class="back-button" onclick="goToScreen5()">←</button>
+          <div class="screen-header-title">
+            <h2>Ver mezcla total</h2>
+            <p>Revisá los productos agregados.</p>
+          </div>
         </div>
-
-        <h2>Ver mezcla total</h2>
-        <p>Revisá los productos agregados.</p>
 
         <div class="detail-panel" style="margin-top:18px;">
           <div>
@@ -1254,17 +1285,19 @@ cargarProductos();
         const item = document.createElement('div');
         item.className = 'mix-item';
 
-        const left = document.createElement('div');
-        left.innerHTML = `<strong>${product.order}. ${product.name}</strong>`;
+        const badge = document.createElement('div');
+        badge.className = 'order-badge';
+        badge.textContent = product.order;
+
+        const content = document.createElement('div');
+        content.className = 'mix-item-content';
+        content.innerHTML = `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><strong>${product.name}</strong><span style="color:#64748b;font-size:14px;">${product.dose} ${product.unit}</span></div>`;
 
         const right = document.createElement('div');
         right.style.display = 'flex';
         right.style.flexDirection = 'column';
         right.style.alignItems = 'flex-end';
         right.style.gap = '4px';
-
-        const doseText = document.createElement('strong');
-        doseText.textContent = `${product.dose} ${product.unit}`;
 
         const productTotal = product.dose * effectiveHectareas;
         const totalFormatted = formatProductTotal(productTotal, (product.rawUnit || product.unit.replace('/ha','')).toLowerCase());
@@ -1273,10 +1306,10 @@ cargarProductos();
         totalLabel.style.fontSize = '13px';
         totalLabel.textContent = `${totalFormatted.amount} ${totalFormatted.unit}`;
 
-        right.appendChild(doseText);
         right.appendChild(totalLabel);
 
-        item.appendChild(left);
+        item.appendChild(badge);
+        item.appendChild(content);
         item.appendChild(right);
 
         summary.appendChild(item);
@@ -1335,7 +1368,7 @@ cargarProductos();
     sortedProducts.forEach((product, idx) => {
       const productTotal = product.dose * effectiveHectareas;
       const totalFormatted = formatProductTotal(productTotal, (product.rawUnit || product.unit.replace('/ha','')).toLowerCase());
-      lines.push(`${idx + 1}. ${product.name} - ${product.dose} (${totalFormatted.amount} ${totalFormatted.unit})`);
+      lines.push(`${idx + 1}. ${product.name} - ${product.dose} ${product.unit} (${totalFormatted.amount} ${totalFormatted.unit})`);
     });
     const text = lines.join('\n');
     try {
