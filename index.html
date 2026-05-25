@@ -189,18 +189,18 @@
     }
     .category-tabs{
       display:flex;
-      gap:8px;
+      gap:6px;
       flex-wrap:wrap;
-      margin-top:12px;
+      margin-top:10px;
     }
     .category-tab{
       border:1px solid #d1d5db;
       border-radius:999px;
       background:#f8fafc;
       color:#0f172a;
-      padding:8px 14px;
+      padding:6px 10px;
       cursor:pointer;
-      font-size:13px;
+      font-size:12px;
     }
     .category-tab.active{
       background:#d1fae5;
@@ -212,7 +212,7 @@
       justify-content:space-between;
       align-items:center;
       gap:16px;
-      padding:14px 16px;
+      padding:12px 14px;
       border:1px solid #e2e8f0;
       border-radius:18px;
       margin-bottom:10px;
@@ -223,6 +223,10 @@
     }
     .catalog-item:hover{
       background:#f8fafc;
+    }
+    .catalog-item.disabled{
+      opacity:.55;
+      cursor:not-allowed;
     }
     .catalog-item .catalog-meta{
       color:#475569;
@@ -252,6 +256,12 @@
     }
     .product-mix-summary .mix-item:last-child{
       border-bottom:none;
+    }
+    .mix-item.dragging{
+      opacity:.4;
+    }
+    .mix-item.drag-over{
+      background:#f8fafc;
     }
     .order-badge{
       width:30px;
@@ -390,7 +400,7 @@
       gap:12px;
       align-items:center;
       padding:14px 0;
-      border-bottom:1px solid #e5e7eb; /* línea un poco más oscura */
+      border-bottom:1px solid #111827; /* línea más oscura, casi negra */
     }
     .plan-step:last-child{
       border-bottom:none;
@@ -729,7 +739,10 @@ Finesse 15 g/ha</textarea>
             <button id="remainingProductsButton" type="button" class="link-button active" onclick="toggleRemainingProducts()" style="font-size:14px; padding:10px 14px; border-radius:16px; border:1px solid #10b981; background:#d1fae5; color:#065f46;">Productos restantes</button>
           </div>
 
-          <div id="planSteps" style="margin-top:18px;"></div>
+          <div style="margin-top:18px;">
+            <strong style="font-size:15px;display:block;margin-bottom:8px;">Cargar en este Orden</strong>
+          </div>
+          <div id="planSteps" style="margin-top:8px;"></div>
         </div>
 
         <div class="plan-note">
@@ -739,7 +752,6 @@ Finesse 15 g/ha</textarea>
           </div>
         </div>
 
-        <button class="primary-action" onclick="handlePlanAction()">Confirmar carga</button>
       </div>
     </section>
 
@@ -842,16 +854,23 @@ Finesse 15 g/ha</textarea>
         </div>
 
         <h2>Ver mezcla total</h2>
-        <p>Revisá los productos agregados y el volumen final de mezcla.</p>
+        <p>Revisá los productos agregados.</p>
+
+        <div class="detail-panel" style="margin-top:18px;">
+          <div>
+            <label>Hectáreas</label>
+            <input id="summaryHectareas" type="number" inputmode="decimal" value="100" oninput="renderMixTotal()" style="width:100%;padding:12px 14px;border:1px solid #d1d5db;border-radius:16px;outline:none;" />
+          </div>
+        </div>
 
         <div id="mixSummary" class="product-mix-summary"></div>
 
         <div class="detail-panel">
-          <div class="row"><span>Volumen final de mezcla</span><strong id="finalMixVolume">0 L</strong></div>
           <div class="row"><span>Productos en la mezcla</span><strong id="finalMixCount">0</strong></div>
         </div>
 
-        <button class="primary-action" onclick="finishRecipeBuild()">Continuar a aplicación →</button>
+        <button class="primary-action" onclick="shareRecipe()">Compartir receta</button>
+        <button class="primary-action" style="margin-top:12px; background:#0f766e;" onclick="finishRecipeBuild()">Continuar a aplicación →</button>
       </div>
     </section>
 
@@ -917,6 +936,10 @@ Finesse 15 g/ha</textarea>
 
   function goToScreen8(){
     showScreen('screen8');
+    const summaryHectareas = document.getElementById('summaryHectareas');
+    if(summaryHectareas){
+      summaryHectareas.value = getNumber('hectareas') || summaryHectareas.value;
+    }
     renderMixTotal();
   }
 
@@ -925,6 +948,8 @@ let productos = [];
 let baseProductos = [];
 let recipeProducts = [];
 let selectedCatalogProduct = null;
+let editingProductIndex = null;
+let draggedRecipeIndex = null;
 let selectedCategory = 'Todos';
 let searchQuery = '';
 let planConfirmed = false;
@@ -1004,9 +1029,13 @@ cargarProductos();
       list.innerHTML = '<div class="product-mix-empty">Aún no agregaste ningún producto. Presioná "Agregar producto" para comenzar tu mezcla.</div>';
       return;
     }
-    recipeProducts.sort((a,b) => a.order - b.order).forEach(product => {
+
+    const sortedProducts = [...recipeProducts].sort((a,b) => a.order - b.order);
+    sortedProducts.forEach((product, index) => {
       const item = document.createElement('div');
       item.className = 'mix-item';
+      item.draggable = true;
+      item.dataset.index = index;
 
       const badge = document.createElement('div');
       badge.className = 'order-badge';
@@ -1014,26 +1043,57 @@ cargarProductos();
 
       const content = document.createElement('div');
       content.className = 'mix-item-content';
-      content.innerHTML = `<strong>${product.name}</strong><br><small>${product.dose} ${product.unit}</small>`;
+      content.innerHTML = `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><strong>${product.name}</strong><span style="color:#64748b;font-size:14px;">${product.dose} ${product.unit}</span></div>`;
 
       const right = document.createElement('div');
       right.style.display = 'flex';
       right.style.alignItems = 'center';
       right.style.gap = '8px';
 
-      const amount = document.createElement('strong');
-      amount.textContent = `${product.total.toFixed(1)} ${product.unit.replace('/ha','')}`;
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'link-button';
+      edit.style.padding = '10px 12px';
+      edit.style.fontSize = '13px';
+      edit.textContent = 'Editar';
+      edit.onclick = () => editRecipeProduct(index);
 
       const del = document.createElement('button');
       del.type = 'button';
       del.className = 'link-button';
-      del.style.padding = '10px';
+      del.style.padding = '10px 12px';
+      del.style.fontSize = '13px';
       del.textContent = '🗑️';
       del.title = 'Eliminar producto';
       del.onclick = () => removeProductById(product.id);
 
-      right.appendChild(amount);
+      right.appendChild(edit);
       right.appendChild(del);
+
+      item.ondragstart = (e) => {
+        draggedRecipeIndex = index;
+        item.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      };
+      item.ondragend = () => {
+        item.classList.remove('dragging');
+        draggedRecipeIndex = null;
+      };
+      item.ondragover = (e) => {
+        e.preventDefault();
+      };
+      item.ondragenter = () => {
+        if(index !== draggedRecipeIndex) item.classList.add('drag-over');
+      };
+      item.ondragleave = () => {
+        item.classList.remove('drag-over');
+      };
+      item.ondrop = (e) => {
+        e.preventDefault();
+        item.classList.remove('drag-over');
+        if(draggedRecipeIndex === null || draggedRecipeIndex === index) return;
+        reorderRecipeProducts(draggedRecipeIndex, index);
+      };
 
       item.appendChild(badge);
       item.appendChild(content);
@@ -1076,16 +1136,22 @@ cargarProductos();
     catalogList.innerHTML = '';
     filtered.forEach(product => {
       const item = document.createElement('button');
+      const alreadyAdded = recipeProducts.some(p => p.id === product.id);
       item.type = 'button';
-      item.className = 'catalog-item';
+      item.className = 'catalog-item' + (alreadyAdded ? ' disabled' : '');
+      item.disabled = alreadyAdded;
       item.innerHTML = `
         <div>
           <strong>${product.name}</strong>
           <div class="catalog-meta">${product.category}</div>
         </div>
-        <div style="text-align:right;font-size:14px;color:#475569;">${product.defaultDose} ${product.unit}</div>
+        <div style="text-align:right;font-size:13px;color:#475569;line-height:1.2;">
+          ${product.defaultDose} ${product.unit}${alreadyAdded ? '<br><strong>Añadido</strong>' : ''}
+        </div>
       `;
-      item.onclick = () => selectCatalogProduct(product.id);
+      if(!alreadyAdded){
+        item.onclick = () => selectCatalogProduct(product.id);
+      }
       catalogList.appendChild(item);
     });
 
@@ -1138,15 +1204,39 @@ cargarProductos();
     const order = getInt('productOrder') || (recipeProducts.length + 1);
     const hectareas = getNumber('hectareas');
     const total = dose * hectareas;
+    const existingIndex = recipeProducts.findIndex(p => p.id === selectedCatalogProduct.id);
 
-    recipeProducts.push({
-      id: selectedCatalogProduct.id,
-      name: selectedCatalogProduct.name,
-      dose,
-      unit,
-      total,
-      order
-    });
+    if(editingProductIndex !== null){
+      if(existingIndex !== -1 && existingIndex !== editingProductIndex){
+        showToastMessage('No puede haber productos duplicados.');
+        return;
+      }
+      recipeProducts[editingProductIndex] = {
+        id: selectedCatalogProduct.id,
+        name: selectedCatalogProduct.name,
+        dose,
+        unit,
+        total,
+        order
+      };
+      editingProductIndex = null;
+    } else {
+      if(existingIndex !== -1){
+        showToastMessage('Este producto ya está agregado.');
+        return;
+      }
+      recipeProducts.push({
+        id: selectedCatalogProduct.id,
+        name: selectedCatalogProduct.name,
+        dose,
+        unit,
+        total,
+        order
+      });
+    }
+
+    recipeProducts.sort((a,b) => a.order - b.order);
+    recipeProducts.forEach((prod, idx) => prod.order = idx + 1);
 
     selectedCatalogProduct = null;
     goToScreen5();
@@ -1158,31 +1248,33 @@ cargarProductos();
     if(recipeProducts.length === 0){
       summary.innerHTML = '<div class="product-mix-empty">No hay productos en la mezcla.</div>';
     } else {
-      recipeProducts.sort((a,b) => a.order - b.order).forEach(product => {
+      const effectiveHectareas = getNumber('summaryHectareas') || getNumber('hectareas');
+      const sortedProducts = [...recipeProducts].sort((a,b) => a.order - b.order);
+      sortedProducts.forEach(product => {
         const item = document.createElement('div');
         item.className = 'mix-item';
 
         const left = document.createElement('div');
-        left.innerHTML = `<strong>${product.name}</strong><br><small>${product.dose} ${product.unit}</small>`;
+        left.innerHTML = `<strong>${product.order}. ${product.name}</strong>`;
 
         const right = document.createElement('div');
         right.style.display = 'flex';
-        right.style.alignItems = 'center';
-        right.style.gap = '8px';
+        right.style.flexDirection = 'column';
+        right.style.alignItems = 'flex-end';
+        right.style.gap = '4px';
 
-        const amount = document.createElement('strong');
-        amount.textContent = `${product.total.toFixed(1)} ${product.unit.replace('/ha','')}`;
+        const doseText = document.createElement('strong');
+        doseText.textContent = `${product.dose} ${product.unit}`;
 
-        const del = document.createElement('button');
-        del.type = 'button';
-        del.className = 'link-button';
-        del.style.padding = '10px';
-        del.textContent = '🗑️';
-        del.title = 'Eliminar producto';
-        del.onclick = () => removeProductById(product.id);
+        const productTotal = product.dose * effectiveHectareas;
+        const totalFormatted = formatProductTotal(productTotal, (product.rawUnit || product.unit.replace('/ha','')).toLowerCase());
+        const totalLabel = document.createElement('span');
+        totalLabel.style.color = '#475569';
+        totalLabel.style.fontSize = '13px';
+        totalLabel.textContent = `${totalFormatted.amount} ${totalFormatted.unit}`;
 
-        right.appendChild(amount);
-        right.appendChild(del);
+        right.appendChild(doseText);
+        right.appendChild(totalLabel);
 
         item.appendChild(left);
         item.appendChild(right);
@@ -1191,9 +1283,67 @@ cargarProductos();
       });
     }
 
-    const totalVolume = getNumber('hectareas') * getNumber('ltsHa');
-    document.getElementById('finalMixVolume').innerText = `${totalVolume.toFixed(0)} L`;
     document.getElementById('finalMixCount').innerText = recipeProducts.length.toString();
+  }
+
+  function reorderRecipeProducts(fromIndex, toIndex){
+    const sorted = [...recipeProducts].sort((a,b) => a.order - b.order);
+    const [movedItem] = sorted.splice(fromIndex, 1);
+    sorted.splice(toIndex, 0, movedItem);
+    sorted.forEach((product, idx) => product.order = idx + 1);
+    recipeProducts = sorted;
+    renderMixList();
+    renderMixTotal();
+  }
+
+  function editRecipeProduct(index){
+    const sortedProducts = [...recipeProducts].sort((a,b) => a.order - b.order);
+    const product = sortedProducts[index];
+    if(!product) return;
+    const source = productos.length > 0 ? productos : productCatalog;
+    selectedCatalogProduct = source.find(p => p.id === product.id) || { id: product.id, name: product.name, category: product.category || 'Otros', unit: product.unit };
+    editingProductIndex = recipeProducts.findIndex(p => p.id === product.id);
+    goToScreen7();
+    const doseInput = document.getElementById('productDose');
+    const unitSelect = document.getElementById('productUnit');
+    const orderInput = document.getElementById('productOrder');
+    if(doseInput) doseInput.value = String(product.dose).replace('.', ',');
+    if(unitSelect) unitSelect.value = product.unit || 'L/ha';
+    if(orderInput) orderInput.value = product.order || (index + 1);
+    updateDosePreview();
+  }
+
+  function showToastMessage(message){
+    const toast = document.getElementById('toastMessage');
+    if(!toast) return;
+    toast.innerText = message;
+    toast.classList.remove('hidden');
+    clearTimeout(undoToastTimer);
+    undoToastTimer = setTimeout(() => toast.classList.add('hidden'), 3500);
+  }
+
+  async function shareRecipe(){
+    const effectiveHectareas = getNumber('summaryHectareas') || getNumber('hectareas');
+    const ltsHa = getNumber('ltsHa');
+    const sortedProducts = [...recipeProducts].sort((a,b) => a.order - b.order);
+    const lines = [
+      'Receta de aplicación',
+      `Hectáreas: ${effectiveHectareas} ha`,
+      '',
+      'Productos:'
+    ];
+    sortedProducts.forEach((product, idx) => {
+      const productTotal = product.dose * effectiveHectareas;
+      const totalFormatted = formatProductTotal(productTotal, (product.rawUnit || product.unit.replace('/ha','')).toLowerCase());
+      lines.push(`${idx + 1}. ${product.name} - ${product.dose} (${totalFormatted.amount} ${totalFormatted.unit})`);
+    });
+    const text = lines.join('\n');
+    try {
+      await navigator.clipboard.writeText(text);
+      showToastMessage('Receta copiada al portapapeles');
+    } catch (error) {
+      window.prompt('Copia la receta manualmente:', text);
+    }
   }
 
   function loadSummary(){
@@ -1261,6 +1411,7 @@ cargarProductos();
       const normalizedUnit = unitMap[rawUnit];
       if(!normalizedUnit) return products;
 
+      const doseUnit = `${normalizedUnit}/ha`;
       const name = match[1].trim();
       const dose = parseFloat(match[2].replace(',', '.')) || 0;
       const totalValue = dose * hectareas;
@@ -1271,7 +1422,8 @@ cargarProductos();
         name,
         doseValue: dose,
         dose: formattedDose,
-        unit: normalizedUnit,
+        unit: doseUnit,
+        rawUnit: normalizedUnit,
         total: total.amount,
         totalUnit: total.unit
       });
@@ -1429,14 +1581,14 @@ cargarProductos();
 
     products.forEach(product => {
       const amount = product.doseValue * haEstaTancada;
-      if(product.unit === 'L' || product.unit === 'CC' || product.unit === 'ML'){
-        const liters = product.unit === 'L' ? amount : (product.unit === 'CC' || product.unit === 'ML' ? amount / 1000 : amount);
+      if(product.rawUnit === 'L' || product.rawUnit === 'CC' || product.rawUnit === 'ML'){
+        const liters = product.rawUnit === 'L' ? amount : (product.rawUnit === 'CC' || product.rawUnit === 'ML' ? amount / 1000 : amount);
         productVolume += liters;
       }
       tankSteps.push({
         title: product.name,
         hint: `${product.dose} ${product.unit}`,
-        amount: formatStepAmount(amount, product.unit),
+        amount: formatStepAmount(amount, product.rawUnit),
         stepType: 'product',
         productName: product.name
       });
@@ -1444,9 +1596,9 @@ cargarProductos();
 
     const initialWater = Math.max(0, litrosEstaTancada - productVolume);
     const planSteps = [
-      { title: 'Agua', hint: 'Llenar tanque hasta la mitad', amount: `${initialWater.toFixed(0)} L` },
+      { title: 'Agua', hint: 'Llenar tanque hasta la mitad', amount: '' },
       ...tankSteps,
-      { title: 'Completar con agua', hint: `Hasta ${litrosEstaTancada.toFixed(0)} L`, amount: '' }
+      { title: 'Completar con agua', hint: 'Hasta', amount: `${litrosEstaTancada.toFixed(0)} L` }
     ];
 
     const stepsContainer = document.getElementById('planSteps');
@@ -1534,7 +1686,7 @@ cargarProductos();
       const totalAmount = product.doseValue * hectareas;
       const usedAmount = product.doseValue * prevHa;
       const remainingAmount = Math.max(0, totalAmount - usedAmount);
-      return `<div class="detail-row" style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #e5e7eb;"><span>${product.name}</span><strong>${formatStepAmount(remainingAmount, product.unit)}</strong></div>`;
+      return `<div class="detail-row" style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #e5e7eb;"><span>${product.name}</span><strong>${formatStepAmount(remainingAmount, product.rawUnit)}</strong></div>`;
     }).join('');
   }
 
