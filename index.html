@@ -186,15 +186,29 @@
       margin-top:18px;
     }
     .summary-panel .metric{
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.12);
+      background:rgba(52, 211, 153, 0.18);
+      border:1px solid rgba(6, 95, 70, 0.24);
       border-radius:18px;
       padding:14px;
+      text-align:center;
+      min-height:90px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      gap:6px;
     }
     .summary-panel .metric small{
-      color:#94a3b8;
+      color:#0f172a;
       display:block;
-      margin-bottom:6px;
+      margin-bottom:0;
+      font-weight:700;
+    }
+    .summary-panel .metric strong{
+      display:block;
+      color:#065f46;
+      font-size:28px;
+      line-height:1;
     }
     .card-header{
       display:flex;
@@ -230,19 +244,20 @@
     }
     .category-tabs{
       display:flex;
-      gap:8px;
       flex-wrap:wrap;
+      gap:8px;
       margin-top:10px;
     }
     .category-tab{
-      flex:0 1 auto;
+      flex:0 0 auto;
       border:1px solid #d1d5db;
       border-radius:999px;
       background:#f8fafc;
       color:#0f172a;
-      padding:6px 10px;
+      padding:6px 12px;
       cursor:pointer;
       font-size:12px;
+      font-weight:700;
       white-space:nowrap;
     }
     .category-tab.active{
@@ -292,40 +307,72 @@
     }
     .product-mix-summary .mix-item{
       display:grid;
-      grid-template-columns:64px 40px 1fr 120px;
+      grid-template-columns:36px minmax(0,1fr) auto;
       gap:12px;
       padding:12px 14px;
       border-bottom:1px solid #e5e7eb;
-      align-items:center;
+      align-items:start;
       touch-action:none;
       min-width:0;
+    }
+    .product-mix-summary.mix-table .mix-item{
+      grid-template-columns:36px minmax(0,1fr) 84px 90px;
+      align-items:center;
     }
     .product-mix-summary .mix-item .actions{
       display:flex;
       flex-direction:column;
-      gap:8px;
-      align-items:flex-start;
+      gap:6px;
+      align-items:stretch;
+      justify-content:flex-start;
+      min-width:84px;
     }
     .product-mix-summary .mix-item .actions button{
-      width:120px;
-      text-align:left;
+      width:100%;
+      text-align:center;
       padding:8px 10px;
       border-radius:12px;
       font-weight:700;
+      font-size:12px;
+      margin-top:0;
     }
     .product-mix-summary .mix-item .actions button.edit{ background:#eef2ff; color:#1d4ed8; border:1px solid rgba(29,78,216,0.12); }
     .product-mix-summary .mix-item .actions button.delete{ background:#fff7f7; color:#b91c1c; border:1px solid rgba(185,28,28,0.08); }
-    .product-mix-summary .mix-item .order-badge{ grid-column:2; justify-self:center; }
-    .product-mix-summary .mix-item .mix-item-content strong{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
+    .product-mix-summary .mix-item .order-badge{ justify-self:center; }
     .product-mix-summary .mix-item .mix-item-content{
       min-width:0;
-      flex:1;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
     }
-    .product-mix-summary .mix-item .mix-item-content strong{
+    .product-mix-summary .mix-item .mix-item-content strong,
+    .product-mix-summary .mix-item .mix-item-content .mix-item-meta,
+    .product-mix-summary .mix-item .mix-item-name,
+    .product-mix-summary .mix-item .mix-item-dose,
+    .product-mix-summary .mix-item .mix-item-total{
       display:block;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
+    }
+    .product-mix-summary .mix-item .mix-item-content .mix-item-meta,
+    .product-mix-summary .mix-item .mix-item-dose{
+      color:#64748b;
+      font-size:14px;
+    }
+    .product-mix-summary .mix-item .mix-item-name strong{
+      display:block;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .product-mix-summary .mix-item .mix-item-total{
+      text-align:right;
+      font-size:14px;
+      font-weight:700;
+      color:#047857;
+      white-space:nowrap;
+      padding-top:2px;
     }
     .product-mix-summary .mix-item:last-child{
       border-bottom:none;
@@ -515,62 +562,87 @@
       margin-top:18px;
     }
     .product-list{
-      display:grid;
-      gap:0;
       margin-top:12px;
+      overflow:hidden;
+      width:100%;
     }
-    .product-list .product{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:14px;
-      padding:12px 0;
+    .product-table{
+      width:100%;
+      border-collapse:collapse;
+      table-layout:fixed;
+    }
+    .product-table thead th,
+    .product-table tbody td{
+      padding:12px 10px;
+      vertical-align:middle;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .product-table thead th{
       border-bottom:1px solid #e2e8f0;
-      flex-wrap:wrap;
+      font-size:13px;
+      color:#475569;
+      font-weight:700;
+      text-align:left;
     }
-    .product-list .product:last-child{
+    .product-table tbody tr{
+      border-bottom:1px solid #e2e8f0;
+    }
+    .product-table tbody tr:last-child{
       border-bottom:none;
     }
-    .product-number{
+    .product-table .col-order{
       width:34px;
-      height:34px;
+      text-align:center;
+    }
+    .product-table .col-product{
+      width:52%;
+    }
+    .product-table .col-dose{
+      width:24%;
+      text-align:right;
+    }
+    .product-table .col-total{
+      width:24%;
+      text-align:right;
+      color:#047857;
+      font-weight:800;
+    }
+    .product-table .product-name{
+      display:block;
+      font-size:15px;
+      color:#0f172a;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .product-table .product-dose{
+      display:block;
+      font-size:14px;
+      font-weight:700;
+      color:#0f172a;
+      text-align:right;
+    }
+    .product-table .product-total{
+      display:block;
+      font-size:14px;
+      font-weight:800;
+      color:#047857;
+      text-align:right;
+    }
+    .product-order-badge{
+      width:30px;
+      height:30px;
       display:flex;
       align-items:center;
       justify-content:center;
       border-radius:50%;
-      background:rgba(14,165,233,.15);
-      color:#0369a1;
+      background:#d1fae5;
+      color:#065f46;
       font-weight:700;
       font-size:14px;
-    }
-    .product-detail{
-      min-width:0;
-      display:flex;
-      gap:8px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-    .product-detail strong{
-      font-size:15px;
-      color:#0f172a;
-      line-height:1.4;
-      white-space:nowrap;
-      min-width:0;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .product-detail small{
-      color:#64748b;
-      font-size:14px;
-      white-space:nowrap;
-    }
-    .product-dose{
-      text-align:right;
-      font-size:14px;
-      font-weight:700;
-      color:#0f172a;
-      min-width:90px;
-      white-space:nowrap;
+      margin:0 auto;
     }
     .tank-buttons{
       display:grid;
@@ -833,9 +905,6 @@
             <button id="remainingProductsButton" type="button" class="link-button active" onclick="toggleRemainingProducts()" style="font-size:14px; padding:10px 14px; border-radius:16px; border:1px solid #10b981; background:#d1fae5; color:#065f46;">Productos restantes</button>
           </div>
 
-          <div style="margin-top:18px;">
-            <strong style="font-size:15px;display:block;margin-bottom:8px;">Cargar en este Orden</strong>
-          </div>
           <div id="planSteps" style="margin-top:8px;"></div>
         </div>
 
@@ -1116,6 +1185,144 @@ cargarProductos();
     return isNaN(n) ? 0 : n;
   }
 
+  function normalizeUnitKey(unit){
+    const normalized = String(unit || '').trim().toLowerCase().replace(/\s+/g,'');
+    if(!normalized) return 'l/ha';
+    if(normalized === 'l' || normalized === 'l/ha') return 'l/ha';
+    if(normalized === 'cc' || normalized === 'cc/ha') return 'cc/ha';
+    if(normalized === 'ml' || normalized === 'ml/ha') return 'ml/ha';
+    if(normalized === 'g' || normalized === 'g/ha') return 'g/ha';
+    if(normalized === 'kg' || normalized === 'kg/ha') return 'kg/ha';
+    if(normalized === 'cc/100l') return 'cc/100l';
+    if(normalized === 'ml/100l') return 'ml/100l';
+    if(normalized === 'l/100l') return 'l/100l';
+    return normalized;
+  }
+
+  function calculateProductTotalSourceAmount(dose, unit, hectareas, caldoTotal){
+    const normalized = normalizeUnitKey(unit);
+    const doseValue = getNumber(dose);
+    const totalHa = getNumber(hectareas);
+    const totalCaldo = getNumber(caldoTotal);
+
+    if(normalized === 'cc/100l' || normalized === 'ml/100l'){
+      return doseValue * totalCaldo / 100;
+    }
+    if(normalized === 'l/100l'){
+      return doseValue * totalCaldo / 100;
+    }
+    return doseValue * totalHa;
+  }
+
+  function formatProductTotal(value, unit){
+    const normalized = normalizeUnitKey(unit);
+    const numericValue = getNumber(value);
+
+    if(normalized === 'cc/ha' || normalized === 'cc/100l' || normalized === 'cc'){
+      return {
+        amount: (numericValue / 1000).toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:1}),
+        unit: 'L'
+      };
+    }
+
+    if(normalized === 'ml/ha' || normalized === 'ml/100l' || normalized === 'ml'){
+      return {
+        amount: (numericValue / 1000).toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:1}),
+        unit: 'L'
+      };
+    }
+
+    if(normalized === 'g/ha' || normalized === 'g'){
+      if(numericValue >= 1000){
+        return {
+          amount: (numericValue / 1000).toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:1}),
+          unit: 'kg'
+        };
+      }
+      return {
+        amount: Math.round(numericValue).toLocaleString('es-ES'),
+        unit: 'g'
+      };
+    }
+
+    if(normalized === 'kg/ha' || normalized === 'kg'){
+      return {
+        amount: numericValue.toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:1}),
+        unit: 'kg'
+      };
+    }
+
+    return {
+      amount: numericValue.toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:1}),
+      unit: 'L'
+    };
+  }
+
+  function getProductDisplayInfo(product, hectareas, caldoTotal){
+    const doseValue = getNumber(product.doseValue !== undefined ? product.doseValue : product.dose);
+    const unit = product.unit || product.rawUnit || 'L/ha';
+    const sourceAmount = calculateProductTotalSourceAmount(doseValue, unit, hectareas, caldoTotal);
+    const totalInfo = formatProductTotal(sourceAmount, unit);
+    return {
+      ...product,
+      doseValue,
+      totalValue: sourceAmount,
+      total: totalInfo.amount,
+      totalUnit: totalInfo.unit,
+      rawUnit: product.rawUnit || String(unit).replace('/ha','').toUpperCase()
+    };
+  }
+
+  function formatDoseDisplay(value){
+    const numericValue = getNumber(value);
+    return numericValue.toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:2});
+  }
+
+  function renderUnifiedProductTable(container, rows){
+    container.innerHTML = '';
+
+    if(!rows || rows.length === 0){
+      container.innerHTML = '<div class="product-mix-empty">No hay productos para mostrar.</div>';
+      return;
+    }
+
+    const table = document.createElement('table');
+    table.className = 'product-table';
+
+    const thead = document.createElement('thead');
+    thead.innerHTML = `
+      <tr>
+        <th class="col-order"></th>
+        <th class="col-product">Producto</th>
+        <th class="col-dose">Dosis</th>
+        <th class="col-total">Total</th>
+      </tr>
+    `;
+
+    const tbody = document.createElement('tbody');
+    rows.forEach(row => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="col-order"><span class="product-order-badge">${row.order}</span></td>
+        <td class="col-product"><span class="product-name" title="${row.name}">${row.name}</span></td>
+        <td class="col-dose"><span class="product-dose">${row.dose} ${row.unit}</span></td>
+        <td class="col-total"><span class="product-total">${row.total} ${row.totalUnit || ''}</span></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    table.appendChild(thead);
+    table.appendChild(tbody);
+    container.appendChild(table);
+  }
+
+  function normalizeRecipeOrders(){
+    recipeProducts = [...recipeProducts].sort((a,b) => a.order - b.order).map((product, index) => ({
+      ...product,
+      order: index + 1
+    }));
+  }
+
   function getInt(id){
     const raw = String((document.getElementById(id) && document.getElementById(id).value) || '0').trim().replace(',', '.');
     const n = parseInt(raw, 10);
@@ -1171,40 +1378,23 @@ cargarProductos();
       item.className = 'mix-item';
       item.dataset.index = index;
 
-      // Actions (left column)
       const actions = document.createElement('div');
       actions.className = 'actions';
 
       const edit = document.createElement('button');
       edit.type = 'button';
       edit.className = 'edit';
-      edit.textContent = '✏️ Editar';
+      edit.textContent = 'Editar';
       edit.onclick = () => editRecipeProduct(index);
 
       const del = document.createElement('button');
       del.type = 'button';
       del.className = 'delete';
-      del.textContent = '🗑 Eliminar';
+      del.textContent = 'Eliminar';
       del.onclick = () => removeProductById(product.id);
-
-      const up = document.createElement('button');
-      up.type = 'button';
-      up.className = 'edit';
-      up.style.fontSize = '13px';
-      up.textContent = '▲ Subir';
-      up.onclick = () => { if(index > 0) reorderRecipeProducts(index, index - 1); };
-
-      const down = document.createElement('button');
-      down.type = 'button';
-      down.className = 'delete';
-      down.style.fontSize = '13px';
-      down.textContent = '▼ Bajar';
-      down.onclick = () => { if(index < sortedProducts.length - 1) reorderRecipeProducts(index, index + 1); };
 
       actions.appendChild(edit);
       actions.appendChild(del);
-      actions.appendChild(up);
-      actions.appendChild(down);
 
       const badge = document.createElement('div');
       badge.className = 'order-badge';
@@ -1212,20 +1402,11 @@ cargarProductos();
 
       const content = document.createElement('div');
       content.className = 'mix-item-content';
-      content.innerHTML = `<strong>${product.name}</strong><div style="color:#64748b;font-size:14px;">${product.dose} ${product.unit}</div>`;
+      content.innerHTML = `<strong title="${product.name}">${product.name}</strong><div class="mix-item-meta">${formatDoseDisplay(product.dose)} ${product.unit}</div>`;
 
-      const right = document.createElement('div');
-      right.style.textAlign = 'right';
-      right.innerHTML = `<strong>${(product.total || (product.doseValue * getNumber('hectareas'))).toFixed ? (Number(product.total).toFixed(1)) : product.total} ${product.totalUnit || ''}</strong>`;
-
-      // Touch fallback: mark index for possible reorder via UI
-      item.ontouchstart = () => { draggedRecipeIndex = index; };
-      item.ontouchend = () => { draggedRecipeIndex = null; };
-
-      item.appendChild(actions);
       item.appendChild(badge);
       item.appendChild(content);
-      item.appendChild(right);
+      item.appendChild(actions);
 
       list.appendChild(item);
     });
@@ -1324,8 +1505,9 @@ cargarProductos();
     const hectareas = getNumber('hectareas');
     const dose = getNumber('productDose');
     const unit = document.getElementById('productUnit').value || '';
-    const total = dose * hectareas;
-    document.getElementById('productTotalAmount').innerText = `${total.toFixed(1)} ${unit.replace('/ha','')}`;
+    const sourceAmount = calculateProductTotalSourceAmount(dose, unit, hectareas, getNumber('ltsHa') * hectareas);
+    const totalInfo = formatProductTotal(sourceAmount, unit);
+    document.getElementById('productTotalAmount').innerText = `${totalInfo.amount} ${totalInfo.unit}`;
     document.getElementById('productTargetArea').innerText = `${hectareas.toFixed(1)} ha`;
   }
 
@@ -1335,8 +1517,8 @@ cargarProductos();
     const unit = document.getElementById('productUnit').value || '';
     const order = getInt('productOrder') || (recipeProducts.length + 1);
     const hectareas = getNumber('hectareas');
-    const total = dose * hectareas;
-    const formattedTotal = formatProductTotal(total, unit.replace('/ha','').toLowerCase());
+    const sourceAmount = calculateProductTotalSourceAmount(dose, unit, hectareas, getNumber('ltsHa') * hectareas);
+    const formattedTotal = formatProductTotal(sourceAmount, unit);
     const existingIndex = recipeProducts.findIndex(p => p.id === selectedCatalogProduct.id);
 
     const productEntry = {
@@ -1345,7 +1527,8 @@ cargarProductos();
       dose,
       doseValue: dose,
       unit,
-      total,
+      totalValue: sourceAmount,
+      total: formattedTotal.amount,
       totalUnit: formattedTotal.unit,
       rawUnit: unit.replace('/ha','').toUpperCase(),
       order
@@ -1380,52 +1563,24 @@ cargarProductos();
 
   function renderMixTotal(){
     const summary = document.getElementById('mixSummary');
-    summary.innerHTML = '';
+    summary.className = 'product-list';
     if(recipeProducts.length === 0){
-      summary.innerHTML = '<div class="product-mix-empty">No hay productos en la mezcla.</div>';
+      renderUnifiedProductTable(summary, []);
     } else {
       const effectiveHectareas = getNumber('summaryHectareas') || getNumber('hectareas');
-      const sortedProducts = [...recipeProducts].sort((a,b) => a.order - b.order);
-      sortedProducts.forEach(product => {
-        const item = document.createElement('div');
-        item.className = 'mix-item';
-
-        const badge = document.createElement('div');
-        badge.className = 'order-badge';
-        badge.textContent = product.order;
-
-        const content = document.createElement('div');
-        content.className = 'mix-item-content';
-        content.innerHTML = `<strong>${product.name}</strong>`;
-
-          const right = document.createElement('div');
-        right.style.display = 'flex';
-        right.style.flexDirection = 'column';
-        right.style.alignItems = 'flex-end';
-        right.style.gap = '4px';
-        right.style.minWidth = '120px';
-
-        const doseText = document.createElement('strong');
-        doseText.textContent = `${product.dose} ${product.unit}`;
-
-        const productTotal = product.dose * effectiveHectareas;
-        const totalFormatted = formatProductTotal(productTotal, (product.rawUnit || product.unit.replace('/ha','')).toLowerCase());
-        const totalLabel = document.createElement('span');
-        totalLabel.style.color = '#475569';
-        totalLabel.style.fontSize = '13px';
-        totalLabel.textContent = `(${totalFormatted.amount} ${totalFormatted.unit})`;
-
-        right.appendChild(doseText);
-        right.appendChild(totalLabel);
-
-        const placeholder = document.createElement('div');
-        item.appendChild(placeholder);
-        item.appendChild(badge);
-        item.appendChild(content);
-        item.appendChild(right);
-
-        summary.appendChild(item);
+      const caldoTotal = effectiveHectareas * getNumber('ltsHa');
+      const rows = [...recipeProducts].sort((a,b) => a.order - b.order).map((product, index) => {
+        const info = getProductDisplayInfo(product, effectiveHectareas, caldoTotal);
+        return {
+          order: index + 1,
+          name: info.name,
+          dose: formatDoseDisplay(info.doseValue),
+          unit: info.unit,
+          total: info.total,
+          totalUnit: info.totalUnit
+        };
       });
+      renderUnifiedProductTable(summary, rows);
     }
 
     document.getElementById('finalMixCount').innerText = recipeProducts.length.toString();
@@ -1470,6 +1625,7 @@ cargarProductos();
   async function shareRecipe(){
     const effectiveHectareas = getNumber('summaryHectareas') || getNumber('hectareas');
     const ltsHa = getNumber('ltsHa');
+    const caldoTotal = effectiveHectareas * ltsHa;
     const sortedProducts = [...recipeProducts].sort((a,b) => a.order - b.order);
     const lines = [
       'Receta de aplicación',
@@ -1478,9 +1634,8 @@ cargarProductos();
       'Productos:'
     ];
     sortedProducts.forEach((product, idx) => {
-      const productTotal = product.dose * effectiveHectareas;
-      const totalFormatted = formatProductTotal(productTotal, (product.rawUnit || product.unit.replace('/ha','')).toLowerCase());
-      lines.push(`${idx + 1}. ${product.name} - ${product.dose} ${product.unit} (${totalFormatted.amount} ${totalFormatted.unit})`);
+      const info = getProductDisplayInfo(product, effectiveHectareas, caldoTotal);
+      lines.push(`${idx + 1}. ${info.name} - ${info.dose} ${info.unit} (${info.total} ${info.totalUnit})`);
     });
     const text = lines.join('\n');
     try {
@@ -1513,23 +1668,6 @@ cargarProductos();
     }
   }
 
-  function formatProductTotal(value, unit){
-    const normalized = unit.toLowerCase();
-    if(normalized === 'cc' || normalized === 'ml'){
-      if(value >= 1000){
-        return {amount: (value / 1000).toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1}), unit:'L'};
-      }
-      return {amount: value.toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:0}), unit:normalized.toUpperCase()};
-    }
-    if(normalized === 'g'){
-      if(value >= 1000){
-        return {amount: (value / 1000).toLocaleString('es-ES',{minimumFractionDigits:1,maximumFractionDigits:1}), unit:'kg'};
-      }
-      return {amount: value.toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:0}), unit:'g'};
-    }
-    return {amount: value.toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:0}), unit:normalized.toUpperCase()};
-  }
-
   function parseRecipeProductsFromText(text, hectareas){
     const unitMap = {
       l: 'L', lt: 'L', lts: 'L', litro: 'L', litros: 'L', 
@@ -1545,7 +1683,6 @@ cargarProductos();
       .filter(Boolean)
       .map(line => {
         let cleaned = line.replace(/^[\s\-–—]+/, '');
-        // Remove leading numeric order like "1. ", "10. ", etc.
         cleaned = cleaned.replace(/^\s*\d+\.\s*/, '');
         cleaned = cleaned.replace(/\s+[\-–—]+\s+(?=[0-9])/g, ' ');
         cleaned = cleaned.replace(/\s+[\-–—]+\s+$/g, '');
@@ -1565,9 +1702,9 @@ cargarProductos();
       const doseUnit = `${normalizedUnit}/ha`;
       const name = match[1].trim().replace(/[\-–—]+$/g, '').trim();
       const dose = parseFloat(match[2].replace(',', '.')) || 0;
-      const totalValue = dose * hectareas;
+      const totalValue = calculateProductTotalSourceAmount(dose, doseUnit, hectareas, 0);
       const formattedDose = dose.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2}).replace('.', ',');
-      const total = formatProductTotal(totalValue, normalizedUnit.toLowerCase());
+      const total = formatProductTotal(totalValue, doseUnit);
 
       products.push({
         name,
@@ -1589,20 +1726,9 @@ cargarProductos();
 
   function getActiveRecipeProducts(hectareas){
     const currentHectareas = hectareas || getNumber('hectareas');
+    const caldoTotal = currentHectareas * getNumber('ltsHa');
     if(recipeProducts.length > 0){
-      return [...recipeProducts].sort((a,b) => a.order - b.order).map(product => {
-        const doseValue = product.doseValue !== undefined ? product.doseValue : getNumber(product.dose);
-        const rawUnit = product.rawUnit || product.unit.replace('/ha', '');
-        const totalAmount = product.total !== undefined ? product.total : doseValue * currentHectareas;
-        const totalUnit = product.totalUnit || formatProductTotal(totalAmount, rawUnit.toLowerCase()).unit;
-        return {
-          ...product,
-          doseValue,
-          total: totalAmount,
-          totalUnit,
-          rawUnit
-        };
-      });
+      return [...recipeProducts].sort((a,b) => a.order - b.order).map(product => getProductDisplayInfo(product, currentHectareas, caldoTotal));
     }
     return parseRecipeProducts(currentHectareas);
   }
@@ -1612,15 +1738,19 @@ cargarProductos();
     const parsed = parseRecipeProducts(hectareas);
     if(parsed.length > 0){
       const source = productos.length > 0 ? productos : productCatalog;
+      const caldoTotal = hectareas * getNumber('ltsHa');
       recipeProducts = parsed.map((product, index) => {
         const catalogMatch = source.find(item => item.name.toLowerCase() === product.name.toLowerCase());
+        const totalInfo = getProductDisplayInfo(product, hectareas, caldoTotal);
         return {
           id: catalogMatch ? catalogMatch.id : `parsed-${index}`,
           name: product.name,
           dose: product.doseValue,
           doseValue: product.doseValue,
           unit: product.unit,
-          total: product.doseValue * hectareas,
+          totalValue: totalInfo.totalValue,
+          total: totalInfo.total,
+          totalUnit: totalInfo.totalUnit,
           order: index + 1,
           rawUnit: product.rawUnit
         };
@@ -1670,29 +1800,39 @@ cargarProductos();
       document.getElementById('ltsHaLabel').innerText = extraction.ltsHa;
     }
 
+    const currentHectareas = getNumber('hectareas') || 1;
+    const caldoTotal = currentHectareas * getNumber('ltsHa');
+
     if(extraction.products.length > 0){
       recipeProducts = extraction.products.map((product, index) => {
-        const doseValue = product.doseValue;
-        const totalAmount = doseValue * (getNumber('hectareas') || 1);
-        const totalInfo = formatProductTotal(totalAmount, product.rawUnit.toLowerCase());
+        const info = getProductDisplayInfo({
+          dose: product.doseValue,
+          doseValue: product.doseValue,
+          unit: product.unit,
+          rawUnit: product.rawUnit,
+          name: product.name,
+          order: index + 1
+        }, currentHectareas, caldoTotal);
+
         return {
           id: `ai-${index}`,
-          name: product.name,
-          dose: doseValue,
-          doseValue,
-          unit: product.unit,
-          total: totalAmount,
-          totalUnit: totalInfo.unit,
-          rawUnit: product.rawUnit,
-          order: index + 1
+          name: info.name,
+          dose: info.doseValue,
+          doseValue: info.doseValue,
+          unit: info.unit,
+          totalValue: info.totalValue,
+          total: info.total,
+          totalUnit: info.totalUnit,
+          rawUnit: info.rawUnit,
+          order: info.order
         };
       });
       const recipeField = document.getElementById('recipe');
       if(recipeField){
         recipeField.value = buildRecipeText();
       }
-        renderMixList();
-        updateMixCount();
+      renderMixList();
+      updateMixCount();
     }
 
     calculate();
@@ -1700,38 +1840,26 @@ cargarProductos();
     const productList = document.getElementById('aiProductList');
     productList.innerHTML = '';
     const summary = document.createElement('div');
-    summary.className = 'product-mix-summary';
-    // Header row
-    const header = document.createElement('div');
-    header.className = 'mix-item';
-    header.style.fontWeight = '800';
-    header.style.background = '#f8fafc';
-    header.innerHTML = `<div style="display:flex;flex-direction:column;gap:4px;"></div><div style="text-align:center;">Orden</div><div>Producto</div><div style="text-align:right;">Dosis · Total</div>`;
-    summary.appendChild(header);
-    extraction.products.forEach((product, index) => {
-      const item = document.createElement('div');
-      item.className = 'mix-item';
-
-      const placeholder = document.createElement('div');
-      // order badge
-      const badge = document.createElement('div');
-      badge.className = 'order-badge';
-      badge.textContent = index + 1;
-
-      const content = document.createElement('div');
-      content.className = 'mix-item-content';
-      content.innerHTML = `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><strong>${product.name}</strong><span style="color:#64748b;font-size:14px;">${product.dose} ${product.unit}</span></div>`;
-
-      const totalInfo = document.createElement('div');
-      totalInfo.style.textAlign = 'right';
-      totalInfo.innerHTML = `<strong>${product.dose} ${product.unit}</strong><span style="display:block;color:#475569;font-size:13px;margin-top:4px;">(${product.total} ${product.totalUnit})</span>`;
-
-      item.appendChild(placeholder);
-      item.appendChild(badge);
-      item.appendChild(content);
-      item.appendChild(totalInfo);
-      summary.appendChild(item);
+    summary.className = 'product-list';
+    const rows = extraction.products.map((product, index) => {
+      const info = getProductDisplayInfo({
+        dose: product.doseValue,
+        doseValue: product.doseValue,
+        unit: product.unit,
+        rawUnit: product.rawUnit,
+        name: product.name,
+        order: index + 1
+      }, currentHectareas, caldoTotal);
+      return {
+        order: index + 1,
+        name: info.name,
+        dose: formatDoseDisplay(info.doseValue),
+        unit: info.unit,
+        total: info.total,
+        totalUnit: info.totalUnit
+      };
     });
+    renderUnifiedProductTable(summary, rows);
     productList.appendChild(summary);
 
     document.getElementById('aiExtracted').classList.remove('hidden');
@@ -1739,23 +1867,16 @@ cargarProductos();
 
   function renderProductList(hectareas){
     const products = getActiveRecipeProducts(hectareas);
-    const list = document.getElementById("productList");
-    list.innerHTML = '';
-
-    products.forEach(product => {
-      const item = document.createElement('div');
-      item.className = 'product';
-      item.innerHTML = `
-        <div class="product-detail">
-          <strong>${product.name}</strong>
-          ${product.dose ? `<small>${product.dose} ${product.unit}</small>` : ''}
-        </div>
-        <div style="text-align:right;min-width:120px;white-space:nowrap;">
-          <strong>${product.total} ${product.totalUnit || ''}</strong>
-        </div>
-      `;
-      list.appendChild(item);
-    });
+    const list = document.getElementById('productList');
+    const rows = products.map((product, index) => ({
+      order: index + 1,
+      name: product.name,
+      dose: formatDoseDisplay(product.doseValue),
+      unit: product.unit,
+      total: product.total,
+      totalUnit: product.totalUnit
+    }));
+    renderUnifiedProductTable(list, rows);
   }
 
   function renderPlanTabs(tancadas, activeTank){
@@ -1990,6 +2111,7 @@ cargarProductos();
     if(idx === -1) return;
     lastRemovedProduct = { product: recipeProducts[idx], index: idx };
     recipeProducts.splice(idx,1);
+    normalizeRecipeOrders();
     renderMixList();
     renderMixTotal();
     updateMixCount();
@@ -2016,6 +2138,7 @@ cargarProductos();
   function undoRemoveProduct(){
     if(!lastRemovedProduct) return;
     recipeProducts.splice(lastRemovedProduct.index, 0, lastRemovedProduct.product);
+    normalizeRecipeOrders();
     renderMixList();
     renderMixTotal();
     updateMixCount();
