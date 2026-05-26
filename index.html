@@ -77,6 +77,13 @@
       color:white;
       margin-top:12px;
     }
+    button:disabled,
+    button.disabled{
+      background:#d1d5db;
+      color:#4b5563;
+      cursor:not-allowed;
+      opacity:.9;
+    }
     .grid{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -177,37 +184,38 @@
     }
     .summary-panel{
       display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:12px;
-      background:#111827;
-      color:white;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+      background:#ecfdf5;
+      color:#065f46;
       border-radius:24px;
-      padding:18px;
+      padding:14px;
       margin-top:18px;
     }
     .summary-panel .metric{
-      background:rgba(52, 211, 153, 0.18);
-      border:1px solid rgba(6, 95, 70, 0.24);
+      background:#10b981;
+      border:1px solid #0f766e;
       border-radius:18px;
-      padding:14px;
+      padding:12px 10px;
       text-align:center;
-      min-height:90px;
+      min-height:auto;
       display:flex;
       flex-direction:column;
       justify-content:center;
       align-items:center;
-      gap:6px;
+      gap:4px;
     }
     .summary-panel .metric small{
-      color:#0f172a;
+      color:#ecfdf5;
       display:block;
       margin-bottom:0;
-      font-weight:700;
+      font-weight:800;
+      font-size:12px;
     }
     .summary-panel .metric strong{
       display:block;
-      color:#065f46;
-      font-size:28px;
+      color:#ffffff;
+      font-size:30px;
       line-height:1;
     }
     .card-header{
@@ -242,28 +250,40 @@
       color:#065f46;
       padding:8px 16px;
     }
-    .category-tabs{
+    .filtros-container{
       display:flex;
       flex-wrap:wrap;
       gap:8px;
-      margin-top:10px;
+      margin-top:12px;
     }
-    .category-tab{
-      flex:0 0 auto;
-      border:1px solid #d1d5db;
+    .filtro-chip{
+      width:auto;
+      min-width:fit-content;
+      flex:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      height:38px;
+      padding:0 15px;
       border-radius:999px;
-      background:#f8fafc;
+      border:1px solid #d1d5db;
+      background:#ffffff;
       color:#0f172a;
-      padding:6px 12px;
       cursor:pointer;
-      font-size:12px;
+      font-size:13px;
       font-weight:700;
       white-space:nowrap;
+      margin-top:0;
+      transition:background-color .2s ease, border-color .2s ease, color .2s ease, transform .12s ease;
+      box-shadow:0 1px 2px rgba(15,23,42,.04);
     }
-    .category-tab.active{
-      background:#d1fae5;
-      border-color:#34d399;
-      color:#065f46;
+    .filtro-chip:hover{
+      transform:translateY(-1px);
+    }
+    .filtro-chip.active{
+      background:#10b981;
+      border-color:#10b981;
+      color:#ffffff;
     }
     .catalog-item{
       display:flex;
@@ -278,6 +298,8 @@
       background:#ffffff;
       color:#0f172a;
       width:100%;
+      font-family: system-ui, sans-serif;
+      font-weight:700;
     }
     .catalog-item:hover{
       background:#f8fafc;
@@ -289,6 +311,8 @@
     .catalog-item .catalog-meta{
       color:#475569;
       font-size:13px;
+      font-family: system-ui, sans-serif;
+      font-weight:600;
     }
     .selected-product{
       background:#f0fdf4;
@@ -355,10 +379,23 @@
       overflow:hidden;
       text-overflow:ellipsis;
     }
-    .product-mix-summary .mix-item .mix-item-content .mix-item-meta,
-    .product-mix-summary .mix-item .mix-item-dose{
+    .product-mix-summary .mix-item .mix-item-dose-row{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .product-mix-summary .mix-item .mix-item-dose-label{
+      font-size:11px;
       color:#64748b;
-      font-size:14px;
+      text-transform:uppercase;
+      letter-spacing:0.03em;
+      font-weight:700;
+    }
+    .product-mix-summary .mix-item .mix-item-dose-value{
+      color:#0f172a;
+      font-size:18px;
+      font-weight:800;
+      line-height:1.1;
     }
     .product-mix-summary .mix-item .mix-item-name strong{
       display:block;
@@ -766,11 +803,11 @@
         </div>
 
         <button onclick="runAIExtraction()" style="background:#10b981; margin-top:12px;">Detectar con IA</button>
-        <button onclick="goToScreen2()">Convertir en calculadora →</button>
+        <button id="applyRecipeButton" type="button" onclick="goToScreen2()" disabled aria-disabled="true">Aplicar receta →</button>
         <button onclick="goToScreen5()" style="background:#0f766e;">Armar receta →</button>
 
         <div id="aiExtracted" class="card hidden" style="margin-top:18px;">
-          <h3>Extracción con IA</h3>
+          <h3>Receta detectada</h3>
           <div id="aiInfo" style="margin-bottom:12px;color:#334155;font-size:14px;"></div>
           <div id="aiProductList"></div>
         </div>
@@ -802,8 +839,8 @@
 
         <div style="margin-top:18px">
           <label>Litros por ha</label>
-          <div class="big-number"><span id="ltsHaLabel">47</span> L/ha</div>
-          <input class="slider" id="ltsHa" type="range" min="0" max="120" value="47" oninput="calculate()" />
+          <div class="big-number"><span id="ltsHaLabel">50</span> L/ha</div>
+          <input class="slider" id="ltsHa" type="range" min="0" max="120" value="50" oninput="calculate()" />
         </div>
       </div>
 
@@ -963,7 +1000,7 @@
 
         <input id="productSearch" type="text" placeholder="Buscar por producto o ingrediente" oninput="updateProductSearch()" style="width:100%;padding:12px 14px;border:1px solid #d1d5db;border-radius:16px;outline:none;margin-top:18px;" />
 
-        <div class="category-tabs" id="categoryTabs"></div>
+        <div class="filtros-container" id="categoryTabs"></div>
         <div id="catalogList" style="margin-top:18px;"></div>
       </div>
     </section>
@@ -1080,6 +1117,10 @@
   }
 
   function goToScreen2(){
+    const applyButton = document.getElementById('applyRecipeButton');
+    if(applyButton && applyButton.disabled){
+      return;
+    }
     showScreen('screen2');
     calculate();
   }
@@ -1278,6 +1319,24 @@ cargarProductos();
     return numericValue.toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:2});
   }
 
+  function hasValidRecipeProducts(){
+    return recipeProducts.some(product => {
+      const doseValue = getNumber(product.doseValue !== undefined ? product.doseValue : product.dose);
+      const name = String(product.name || '').trim();
+      const unit = String(product.unit || '').trim();
+      return name.length > 0 && doseValue > 0 && unit.length > 0;
+    });
+  }
+
+  function updateApplyRecipeButtonState(){
+    const button = document.getElementById('applyRecipeButton');
+    if(!button) return;
+    const enabled = hasValidRecipeProducts();
+    button.disabled = !enabled;
+    button.setAttribute('aria-disabled', String(!enabled));
+    button.classList.toggle('disabled', !enabled);
+  }
+
   function renderUnifiedProductTable(container, rows){
     container.innerHTML = '';
 
@@ -1402,7 +1461,7 @@ cargarProductos();
 
       const content = document.createElement('div');
       content.className = 'mix-item-content';
-      content.innerHTML = `<strong title="${product.name}">${product.name}</strong><div class="mix-item-meta">${formatDoseDisplay(product.dose)} ${product.unit}</div>`;
+      content.innerHTML = `<strong title="${product.name}">${product.name}</strong><div class="mix-item-dose-row"><span class="mix-item-dose-label">Dosis</span><span class="mix-item-dose-value">${formatDoseDisplay(product.dose)} ${product.unit}</span></div>`;
 
       item.appendChild(badge);
       item.appendChild(content);
@@ -1427,7 +1486,7 @@ cargarProductos();
     categories.forEach(category => {
       const tab = document.createElement('button');
       tab.type = 'button';
-      tab.className = 'category-tab' + (category === selectedCategory ? ' active' : '');
+      tab.className = 'filtro-chip' + (category === selectedCategory ? ' active' : '');
       tab.innerText = category;
       tab.onclick = () => {
         selectedCategory = category;
@@ -1558,6 +1617,7 @@ cargarProductos();
 
     selectedCatalogProduct = null;
     updateMixCount();
+    updateApplyRecipeButtonState();
     goToScreen5();
   }
 
@@ -1760,6 +1820,7 @@ cargarProductos();
         recipeField.value = buildRecipeText();
       }
     }
+    updateApplyRecipeButtonState();
     goToScreen5();
   }
 
@@ -1835,6 +1896,7 @@ cargarProductos();
       updateMixCount();
     }
 
+    updateApplyRecipeButtonState();
     calculate();
 
     const productList = document.getElementById('aiProductList');
@@ -2115,6 +2177,7 @@ cargarProductos();
     renderMixList();
     renderMixTotal();
     updateMixCount();
+    updateApplyRecipeButtonState();
     const recipeField = document.getElementById('recipe');
     if(recipeField){
       recipeField.value = buildRecipeText();
@@ -2142,6 +2205,7 @@ cargarProductos();
     renderMixList();
     renderMixTotal();
     updateMixCount();
+    updateApplyRecipeButtonState();
     const recipeField = document.getElementById('recipe');
     if(recipeField){
       recipeField.value = buildRecipeText();
@@ -2296,6 +2360,7 @@ cargarProductos();
     }
 
     calculate();
+    updateApplyRecipeButtonState();
   </script>
   <script>
   if ("serviceWorker" in navigator) {
