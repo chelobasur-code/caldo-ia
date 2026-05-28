@@ -77,6 +77,11 @@
         </button>
       </div>
 
+      <div id="aiExtracted" class="card hidden">
+        <div id="aiInfo" class="ai-info"></div>
+        <div id="aiProductList" class="product-list"></div>
+      </div>
+
       <div class="benefits">
         <div class="benefit">Precisión<br><small>Dosis exactas</small></div>
         <div class="benefit">Seguridad<br><small>Orden de carga automático</small></div>
@@ -501,7 +506,8 @@ async function cargarProductos(){
     }));
     renderProductCatalog();
   }catch(e){
-    console.log("No se pudo cargar productos.json", e);
+    console.error("No se pudo cargar productos.json", e);
+    showToastMessage('No se pudo cargar productos.json. Se usará el catálogo local de respaldo.');
     productCatalog = [
       { id: 1, name: 'Fungicida X', category: 'Fungicida', defaultDose: 1.5, dosisMin:1, dosisMax:3, order:5, unit: 'L/ha', keywords:['fungicida'] },
       { id: 2, name: 'Herbicida Y', category: 'Herbicida', defaultDose: 0.8, dosisMin:0.5, dosisMax:1.5, order:6, unit: 'L/ha', keywords:['herbicida'] },
@@ -1150,6 +1156,19 @@ cargarProductos();
   }
 
   function runAIExtraction(){
+    const recipeField = document.getElementById('recipe');
+    if(!recipeField){
+      console.error('No se encontró el campo de receta.');
+      showToastMessage('Error interno: no se puede acceder a la receta.');
+      return;
+    }
+
+    const recipeText = recipeField.value.trim();
+    if(!recipeText){
+      showToastMessage('Por favor ingresa o pega una receta antes de detectar.');
+      return;
+    }
+
     const extraction = extractRecipeInfo();
     const info = [];
     if(extraction.hectareas !== null) info.push(`Hectáreas detectadas: ${extraction.hectareas}`);
@@ -1157,17 +1176,21 @@ cargarProductos();
     if(info.length === 0) info.push('No se detectaron valores de hectáreas ni tanque en el texto.');
 
     const infoElem = document.getElementById('aiInfo');
-    infoElem.innerText = info.join(' · ');
+    if(infoElem) infoElem.innerText = info.join(' · ');
 
     if(extraction.hectareas !== null){
-      document.getElementById('hectareas').value = extraction.hectareas;
+      const hectareasInput = document.getElementById('hectareas');
+      if(hectareasInput) hectareasInput.value = extraction.hectareas;
     }
     if(extraction.tanque !== null){
-      document.getElementById('tanque').value = extraction.tanque;
+      const tanqueInput = document.getElementById('tanque');
+      if(tanqueInput) tanqueInput.value = extraction.tanque;
     }
     if(extraction.ltsHa !== null){
-      document.getElementById('ltsHa').value = extraction.ltsHa;
-      document.getElementById('ltsHaLabel').innerText = extraction.ltsHa;
+      const ltsHaInput = document.getElementById('ltsHa');
+      if(ltsHaInput) ltsHaInput.value = extraction.ltsHa;
+      const ltsHaLabel = document.getElementById('ltsHaLabel');
+      if(ltsHaLabel) ltsHaLabel.innerText = extraction.ltsHa;
     }
 
     const currentHectareas = getNumber('hectareas') || 1;
@@ -1197,43 +1220,54 @@ cargarProductos();
           order: info.order
         };
       });
-      const recipeField = document.getElementById('recipe');
-      if(recipeField){
-        recipeField.value = buildRecipeText();
-      }
+      recipeField.value = buildRecipeText();
       renderMixList();
       updateMixCount();
+    } else {
+      if(extraction.products.length === 0){
+        showToastMessage('No se detectaron productos en la receta. Revisa el texto e intenta de nuevo.');
+      }
     }
 
     updateApplyRecipeButtonState();
     calculate();
 
     const productList = document.getElementById('aiProductList');
-    productList.innerHTML = '';
-    const summary = document.createElement('div');
-    summary.className = 'product-list';
-    const rows = extraction.products.map((product, index) => {
-      const info = getProductDisplayInfo({
-        dose: product.doseValue,
-        doseValue: product.doseValue,
-        unit: product.unit,
-        rawUnit: product.rawUnit,
-        name: product.name,
-        order: index + 1
-      }, currentHectareas, caldoTotal);
-      return {
-        order: index + 1,
-        name: info.name,
-        dose: formatDoseDisplay(info.doseValue),
-        unit: info.unit,
-        total: info.total,
-        totalUnit: info.totalUnit
-      };
-    });
-    renderUnifiedProductTable(summary, rows);
-    productList.appendChild(summary);
+    if(productList){
+      productList.innerHTML = '';
+      if(extraction.products.length === 0){
+        const emptyMessage = document.createElement('div');
+        emptyMessage.className = 'product-mix-empty';
+        emptyMessage.innerText = 'No se detectaron productos para mostrar.';
+        productList.appendChild(emptyMessage);
+      } else {
+        const summary = document.createElement('div');
+        summary.className = 'product-list';
+        const rows = extraction.products.map((product, index) => {
+          const info = getProductDisplayInfo({
+            dose: product.doseValue,
+            doseValue: product.doseValue,
+            unit: product.unit,
+            rawUnit: product.rawUnit,
+            name: product.name,
+            order: index + 1
+          }, currentHectareas, caldoTotal);
+          return {
+            order: index + 1,
+            name: info.name,
+            dose: formatDoseDisplay(info.doseValue),
+            unit: info.unit,
+            total: info.total,
+            totalUnit: info.totalUnit
+          };
+        });
+        renderUnifiedProductTable(summary, rows);
+        productList.appendChild(summary);
+      }
+    }
 
-    document.getElementById('aiExtracted').classList.remove('hidden');
+    const extractedSection = document.getElementById('aiExtracted');
+    if(extractedSection) extractedSection.classList.remove('hidden');
   }
 
   function renderProductList(hectareas){

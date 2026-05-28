@@ -1,9 +1,10 @@
-const CACHE_NAME = "caldo-ia-v1";
+const CACHE_NAME = "caldo-ia-v2";
 
 const FILES_TO_CACHE = [
   "/",
   "/index.html",
-  "/manifest.json"
+  "/manifest.json",
+  "/productos.json"
 ];
 
 self.addEventListener("install", event => {
@@ -29,13 +30,6 @@ self.addEventListener("activate", event => {
   );
   self.clients.claim();
 });
-
-const FILES_TO_CACHE = [
-  "/",
-  "/index.html",
-  "/manifest.json",
-  "/productos.json"
-];
 
 self.addEventListener("fetch", event => {
   event.respondWith(
