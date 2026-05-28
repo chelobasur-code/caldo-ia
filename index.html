@@ -6,813 +6,99 @@
   <title>Caldo IA</title>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#08a63d">
-  <style>
-    html, body{
-      margin:0;
-      padding:0;
-      height:100%;
-      overflow-x:hidden;
-      overflow-y:auto;
-      -webkit-overflow-scrolling:touch;
-    }
-    body{
-      font-family: system-ui, sans-serif;
-      background:#f4f7fb;
-      color:#101828;
-      -webkit-text-size-adjust:100%;
-      touch-action:manipulation;
-    }
-    .app{
-      max-width:430px;
-      margin:auto;
-      min-height:100vh;
-      background:#fff;
-      padding:18px;
-      padding-bottom:140px;
-      box-sizing:border-box;
-      overflow-x:hidden;
-      overflow-y:visible;
-    }
-    .top{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:18px;
-    }
-    .brand{
-      font-size:24px;
-      font-weight:800;
-    }
-    .card{
-      background:#f8fafc;
-      border-radius:24px;
-      padding:18px;
-      margin-bottom:16px;
-      box-shadow:0 8px 24px rgba(16,24,40,.06);
-    }
-    h1,h2,h3{margin:0 0 10px}
-    p{color:#667085}
-    input, textarea{
-      width:100%;
-      border:1px solid #d0d5dd;
-      border-radius:16px;
-      padding:14px;
-      font-size:16px;
-      box-sizing:border-box;
-      outline:none;
-      touch-action: manipulation;
-    }
-    button, select{
-      touch-action: manipulation;
-    }
-    textarea{min-height:130px}
-    button{
-      width:100%;
-      border:0;
-      border-radius:18px;
-      padding:16px;
-      font-size:17px;
-      font-weight:800;
-      background:#155eef;
-      color:white;
-      margin-top:12px;
-    }
-    button:disabled,
-    button.disabled{
-      background:#d1d5db;
-      color:#4b5563;
-      cursor:not-allowed;
-      opacity:.9;
-    }
-    .grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-    }
-    .metric{
-      background:white;
-      border-radius:18px;
-      padding:14px;
-      border:1px solid #eaecf0;
-    }
-    .metric small{
-      color:#667085;
-      display:block;
-      margin-bottom:4px;
-    }
-    .metric strong{
-      font-size:22px;
-    }
-    .slider{
-      width:100%;
-      margin:12px 0;
-    }
-    .big-number{
-      font-size:42px;
-      font-weight:900;
-      color:#155eef;
-      transition:.25s;
-    }
-    .result{
-      background:#ecfdf3;
-      border:1px solid #abefc6;
-      border-radius:22px;
-      padding:14px;
-      margin-top:12px;
-      animation:pop .25s ease;
-    }
-    @keyframes pop{
-      from{transform:scale(.97);opacity:.6}
-      to{transform:scale(1);opacity:1}
-    }
-    .tank{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      background:white;
-      border:1px solid #eaecf0;
-      border-radius:16px;
-      padding:12px;
-      margin-top:10px;
-    }
-    .tank b{color:#155eef}
-    .screen-header{
-      display:flex;
-      align-items:flex-start;
-      gap:14px;
-      margin-bottom:18px;
-    }
-    .back-button{
-      width:42px;
-      height:42px;
-      border-radius:50%;
-      border:1px solid #d1d5db;
-      background:white;
-      color:#0f172a;
-      font-size:18px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      cursor:pointer;
-      box-shadow:0 4px 10px rgba(15,23,42,.08);
-      transition:background .2s ease, border-color .2s ease;
-      flex-shrink:0;
-    }
-    .back-button:hover{
-      background:#f8fafc;
-      border-color:#cbd5e1;
-    }
-    .screen-header-title{
-      flex:1;
-      min-width:0;
-    }
-    .screen-header-title h2{
-      margin:0 0 6px;
-      font-size:22px;
-    }
-    .screen-header-title p{
-      margin:0;
-      color:#475569;
-    }
-    .step-pill{
-      background:#e5efff;
-      color:#0f4ef7;
-      font-weight:700;
-      padding:6px 14px;
-      border-radius:999px;
-      font-size:13px;
-    }
-    .summary-panel{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:10px;
-      background:#ecfdf5;
-      color:#065f46;
-      border-radius:24px;
-      padding:14px;
-      margin-top:18px;
-    }
-    .summary-panel .metric{
-      background:#10b981;
-      border:1px solid #0f766e;
-      border-radius:18px;
-      padding:12px 10px;
-      text-align:center;
-      min-height:auto;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      align-items:center;
-      gap:4px;
-    }
-    .summary-panel .metric small{
-      color:#ecfdf5;
-      display:block;
-      margin-bottom:0;
-      font-weight:800;
-      font-size:12px;
-    }
-    .summary-panel .metric strong{
-      display:block;
-      color:#ffffff;
-      font-size:30px;
-      line-height:1;
-    }
-    .card-header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:14px;
-      gap:12px;
-    }
-    .card-header h3{
-      margin:0;
-      font-size:16px;
-    }
-    .link-button{
-      width:auto;
-      background:none;
-      border:none;
-      color:#155eef;
-      font-weight:700;
-      cursor:pointer;
-      font-size:14px;
-      padding:0;
-      transition: color .2s ease, background .2s ease;
-    }
-    .link-button:hover{
-      color:#0c4f6d;
-    }
-    .link-button.active{
-      background:#d1fae5;
-      border:1px solid #34d399;
-      border-radius:999px;
-      color:#065f46;
-      padding:8px 16px;
-    }
-    .filtros-container{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:12px;
-    }
-    .filtro-chip{
-      width:auto;
-      min-width:fit-content;
-      flex:none;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      height:38px;
-      padding:0 15px;
-      border-radius:999px;
-      border:1px solid #d1d5db;
-      background:#ffffff;
-      color:#0f172a;
-      cursor:pointer;
-      font-size:13px;
-      font-weight:700;
-      white-space:nowrap;
-      margin-top:0;
-      transition:background-color .2s ease, border-color .2s ease, color .2s ease, transform .12s ease;
-      box-shadow:0 1px 2px rgba(15,23,42,.04);
-    }
-    .filtro-chip:hover{
-      transform:translateY(-1px);
-    }
-    .filtro-chip.active{
-      background:#10b981;
-      border-color:#10b981;
-      color:#ffffff;
-    }
-    .catalog-item{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:16px;
-      padding:12px 14px;
-      border:1px solid #e2e8f0;
-      border-radius:18px;
-      margin-bottom:10px;
-      cursor:pointer;
-      background:#ffffff;
-      color:#0f172a;
-      width:100%;
-      font-family: system-ui, sans-serif;
-      font-weight:700;
-    }
-    .catalog-item:hover{
-      background:#f8fafc;
-    }
-    .catalog-item.disabled{
-      opacity:.55;
-      cursor:not-allowed;
-    }
-    .catalog-item .catalog-meta{
-      color:#475569;
-      font-size:13px;
-      font-family: system-ui, sans-serif;
-      font-weight:600;
-    }
-    .selected-product{
-      background:#f0fdf4;
-      border:1px solid #86efac;
-      border-radius:18px;
-      padding:18px;
-      margin-top:14px;
-    }
-    .product-mix-summary{
-      margin-top:18px;
-      border-radius:12px;
-      border:1px solid #e5e7eb;
-      background:#ffffff;
-      overflow:hidden;
-      width:100%;
-    }
-    .product-mix-summary .mix-item{
-      display:grid;
-      grid-template-columns:36px minmax(0,1fr) auto;
-      gap:12px;
-      padding:12px 14px;
-      border-bottom:1px solid #e5e7eb;
-      align-items:start;
-      touch-action:none;
-      min-width:0;
-    }
-    .product-mix-summary.mix-table .mix-item{
-      grid-template-columns:36px minmax(0,1fr) 84px 90px;
-      align-items:center;
-    }
-    .product-mix-summary .mix-item .actions{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      align-items:stretch;
-      justify-content:flex-start;
-      min-width:84px;
-    }
-    .product-mix-summary .mix-item .actions button{
-      width:100%;
-      text-align:center;
-      padding:8px 10px;
-      border-radius:12px;
-      font-weight:700;
-      font-size:12px;
-      margin-top:0;
-    }
-    .product-mix-summary .mix-item .actions button.edit{ background:#eef2ff; color:#1d4ed8; border:1px solid rgba(29,78,216,0.12); }
-    .product-mix-summary .mix-item .actions button.delete{ background:#fff7f7; color:#b91c1c; border:1px solid rgba(185,28,28,0.08); }
-    .product-mix-summary .mix-item .order-badge{ justify-self:center; }
-    .product-mix-summary .mix-item .mix-item-content{
-      min-width:0;
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-    }
-    .product-mix-summary .mix-item .mix-item-content strong,
-    .product-mix-summary .mix-item .mix-item-content .mix-item-meta,
-    .product-mix-summary .mix-item .mix-item-name,
-    .product-mix-summary .mix-item .mix-item-dose,
-    .product-mix-summary .mix-item .mix-item-total{
-      display:block;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .product-mix-summary .mix-item .mix-item-dose-row{
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-    }
-    .product-mix-summary .mix-item .mix-item-dose-label{
-      font-size:11px;
-      color:#64748b;
-      text-transform:uppercase;
-      letter-spacing:0.03em;
-      font-weight:700;
-    }
-    .product-mix-summary .mix-item .mix-item-dose-value{
-      color:#0f172a;
-      font-size:18px;
-      font-weight:800;
-      line-height:1.1;
-    }
-    .product-mix-summary .mix-item .mix-item-name strong{
-      display:block;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .product-mix-summary .mix-item .mix-item-total{
-      text-align:right;
-      font-size:14px;
-      font-weight:700;
-      color:#047857;
-      white-space:nowrap;
-      padding-top:2px;
-    }
-    .product-mix-summary .mix-item:last-child{
-      border-bottom:none;
-    }
-    .mix-item.dragging{ opacity:.4; }
-    .mix-item.drag-over{ background:#f8fafc; }
-    .order-badge{
-      width:30px;
-      height:30px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:50%;
-      background:#d1fae5;
-      color:#065f46;
-      font-weight:700;
-      flex-shrink:0;
-    }
-    .mix-item-content{
-      min-width:0;
-      flex:1;
-    }
-    .product-mix-empty{
-      color:#64748b;
-      padding:32px 16px;
-      text-align:center;
-    }
-    .detail-panel{
-      display:grid;
-      gap:12px;
-      margin-top:18px;
-    }
-    .modal-overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(15,23,42,0.55);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:20px;
-      z-index:999;
-    }
-    .modal-card{
-      width:100%;
-      max-width:320px;
-      background:#ffffff;
-      border-radius:14px;
-      box-shadow:0 14px 40px rgba(15,23,42,0.12);
-      padding:12px 16px;
-      border:1px solid rgba(15,23,42,0.06);
-    }
-    .modal-header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:16px;
-      margin-bottom:16px;
-    }
-    .modal-header h3{
-      margin:0;
-      font-size:16px;
-      line-height:1.2;
-    }
-    .close-button{
-      width:36px;
-      height:36px;
-      border-radius:50%;
-      border:none;
-      background:#e2e8f0;
-      color:#0f172a;
-      cursor:pointer;
-      font-size:18px;
-      line-height:1;
-    }
-    .modal-content{
-      max-height:calc(100vh - 220px);
-      overflow:auto;
-      padding-right:4px;
-    }
-    .detail-panel .row{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:center;
-      font-size:14px;
-      color:#475569;
-    }
-    .detail-panel .row strong{
-      color:#0f172a;
-      font-weight:700;
-    }
-    .plan-tabs{
-      display:flex;
-      gap:10px;
-      margin-top:18px;
-      flex-wrap:wrap;
-    }
-    .plan-tab{
-      flex:1 1 100px;
-      border:1px solid #d1d5db;
-      border-radius:999px;
-      background:#f8fafc;
-      color:#0f172a;
-      font-weight:700;
-      padding:10px 14px;
-      text-align:center;
-      cursor:pointer;
-      min-width:90px;
-      white-space:nowrap;
-    }
-    .plan-tab.active{
-      background:#d1fae5;
-      border-color:#34d399;
-      color:#065f46;
-    }
-    .plan-card{
-      background:#ecfdf5;
-      border:1px solid #d1fae5;
-      border-radius:24px;
-      padding:18px;
-      margin-top:18px;
-    }
-    .plan-title-row{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:14px;
-    }
-    .plan-plan-volume{
-      font-size:32px;
-      font-weight:900;
-      color:#047857;
-      margin:6px 0 0;
-    }
-    .plan-plan-info{
-      color:#475569;
-      font-size:14px;
-    }
-    .plan-step{
-      display:grid;
-      grid-template-columns:28px 1fr auto;
-      gap:12px;
-      align-items:center;
-      padding:14px 0;
-      border-bottom:1px solid #111827; /* línea más oscura, casi negra */
-    }
-    .plan-step:last-child{
-      border-bottom:none;
-    }
-    .step-badge{
-      width:28px;
-      height:28px;
-      border-radius:999px;
-      background:#eff6ff;
-      color:#1d4ed8;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:700;
-      border:2px solid rgba(29,78,216,0.15); /* contorno sutil */
-    }
-    .plan-step strong{
-      display:block;
-      font-size:15px;
-    }
-    .plan-step small{
-      display:block;
-      color:#64748b;
-      margin-top:4px;
-    }
-    .plan-note{
-      background:#fef3c7;
-      border:1px solid #fde68a;
-      border-radius:18px;
-      padding:14px;
-      margin-top:18px;
-      display:flex;
-      gap:12px;
-      align-items:flex-start;
-      color:#92400e;
-    }
-    .plan-note-icon{
-      font-size:20px;
-      line-height:1;
-    }
-    .primary-action{
-      margin-top:18px;
-    }
-    .product-list{
-      margin-top:12px;
-      overflow:hidden;
-      width:100%;
-    }
-    .product-table{
-      width:100%;
-      border-collapse:collapse;
-      table-layout:fixed;
-    }
-    .product-table thead th,
-    .product-table tbody td{
-      padding:12px 10px;
-      vertical-align:middle;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-    .product-table thead th{
-      border-bottom:1px solid #e2e8f0;
-      font-size:13px;
-      color:#475569;
-      font-weight:700;
-      text-align:left;
-    }
-    .product-table tbody tr{
-      border-bottom:1px solid #e2e8f0;
-    }
-    .product-table tbody tr:last-child{
-      border-bottom:none;
-    }
-    .product-table .col-order{
-      width:34px;
-      text-align:center;
-    }
-    .product-table .col-product{
-      width:52%;
-    }
-    .product-table .col-dose{
-      width:24%;
-      text-align:right;
-    }
-    .product-table .col-total{
-      width:24%;
-      text-align:right;
-      color:#047857;
-      font-weight:800;
-    }
-    .product-table .product-name{
-      display:block;
-      font-size:15px;
-      color:#0f172a;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-    .product-table .product-dose{
-      display:block;
-      font-size:14px;
-      font-weight:700;
-      color:#0f172a;
-      text-align:right;
-    }
-    .product-table .product-total{
-      display:block;
-      font-size:14px;
-      font-weight:800;
-      color:#047857;
-      text-align:right;
-    }
-    .product-order-badge{
-      width:30px;
-      height:30px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:50%;
-      background:#d1fae5;
-      color:#065f46;
-      font-weight:700;
-      font-size:14px;
-      margin:0 auto;
-    }
-    .tank-buttons{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:10px;
-      margin-top:12px;
-    }
-    .tank-button{
-      border-radius:18px;
-      padding:16px 12px;
-      font-weight:800;
-      font-size:15px;
-      cursor:pointer;
-      min-height:84px;
-      min-width:110px;
-      transition:.2s;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap:6px;
-      text-align:center;
-      white-space:nowrap;
-    }
-    .tank-button small{
-      font-size:13px;
-      font-weight:600;
-      color:inherit;
-      opacity:.9;
-    }
-    .tank-button.filled{
-      background:#0f9d58;
-      border:1px solid #0f9d58;
-      color:white;
-    }
-    .tank-button.rest{
-      background:#f8fafc;
-      border:1px solid #cbd5e1;
-      color:#334155;
-    }
-    .tank-button.filled:hover{
-      background:#0b7f45;
-      border-color:#0b7f45;
-    }
-    .tank-button.rest:hover{
-      background:#eef2ff;
-    }
-    .primary-action{
-      margin-top:18px;
-    }
-    .hidden{display:none}
-    .nav{
-      position:fixed;
-      bottom:0;
-      left:0;
-      right:0;
-      display:flex;
-      justify-content:space-around;
-      align-items:center;
-      gap:10px;
-      max-width:430px;
-      margin:0 auto;
-      padding:14px 18px;
-      background:#ffffff;
-      border-top:1px solid #e2e8f0;
-      color:#667085;
-      font-size:13px;
-      box-shadow:0 -8px 24px rgba(15,23,42,.08);
-      z-index:100;
-    }
-    .nav-item{ display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:13px; color:#475569; }
-    .nav-item .nav-icon{ font-size:20px; line-height:1; }
-    .nav-item .nav-label{ font-size:12px; margin-top:4px; }
-    .toast-message{
-      position:fixed;
-      left:50%;
-      bottom:24px;
-      transform:translateX(-50%);
-      background:rgba(17,24,39,0.96);
-      color:white;
-      border-radius:16px;
-      padding:14px 18px;
-      display:flex;
-      align-items:center;
-      gap:12px;
-      font-size:14px;
-      z-index:9999;
-      box-shadow:0 20px 60px rgba(15,23,42,.25);
-    }
-    .toast-message button{
-      background:rgba(255,255,255,0.12);
-      border:1px solid rgba(255,255,255,0.28);
-      color:white;
-      border-radius:12px;
-      padding:8px 12px;
-      cursor:pointer;
-      font-weight:700;
-    }
-    .toast-message.hidden{display:none;}
-  </style>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/components/header.css">
+  <link rel="stylesheet" href="/css/components/hero.css">
+  <link rel="stylesheet" href="/css/components/cards.css">
+  <link rel="stylesheet" href="/css/components/nav.css">
 </head>
 <body>
   <div class="app">
 
     <div class="top">
-      <div class="brand">⚗️ Caldo IA</div>
-      <div>?</div>
+      <div class="header-inner">
+        <div class="brand">
+          <div class="brand-logo">⚗️</div>
+          <div class="brand-meta">
+            <div class="brand-name">Caldo IA</div>
+            <div class="brand-tag">Inteligencia aplicada al campo</div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button class="icon-btn" aria-label="Notificaciones">🔔<span class="badge" aria-hidden="true">3</span></button>
+          <button class="icon-btn" aria-label="Ayuda">?</button>
+        </div>
+      </div>
     </div>
 
     <!-- PANTALLA 1 -->
     <section id="screen1">
-      <div class="card">
-        <h1>Subí tu receta</h1>
-        <p>Pegá tu receta o escribila directamente en el cuadro.</p>
+      <div class="hero">
+        <div class="hero-badge">NUEVA RECETA</div>
+        <h1 class="hero-title">Subí tu receta</h1>
+        <p class="hero-sub">Pegá, escribí o escaneá tu receta. La IA la interpreta y arma tu mezcla.</p>
+      </div>
 
-        <textarea id="recipe" placeholder="" ></textarea>
-
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
-          <button type="button" onclick="pasteRecipeFromClipboard()" style="flex:1;min-width:120px;background:#0f766e;">Pegar</button>
-          <button type="button" onclick="enableRecipeWriteMode()" style="flex:1;min-width:120px;background:#155eef;">Escribir</button>
+      <div class="card recipe-card">
+        <div class="card-header">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="card-icon">📄</div>
+            <div class="card-label">TU RECETA</div>
+          </div>
+          <div class="card-actions">
+            <button class="link-button small" onclick="goToHistory()">Historial</button>
+          </div>
         </div>
 
-        <button onclick="runAIExtraction()" style="background:#10b981; margin-top:12px;">Detectar con IA</button>
-        <button id="applyRecipeButton" type="button" onclick="goToScreen2()" disabled aria-disabled="true">Aplicar receta →</button>
-        <button onclick="goToScreen5()" style="background:#0f766e;">Armar receta →</button>
-
-        <div id="aiExtracted" class="card hidden" style="margin-top:18px;">
-          <h3>Receta detectada</h3>
-          <div id="aiInfo" style="margin-bottom:12px;color:#334155;font-size:14px;"></div>
-          <div id="aiProductList"></div>
+        <textarea id="recipe" placeholder="Ej: Azoxistrobina 0,30 L/ha" oninput="updateRecipeCounter()"></textarea>
+        <div class="recipe-controls">
+          <div class="split-buttons">
+            <button type="button" class="btn-outline" onclick="pasteRecipeFromClipboard()">📋 Pegar</button>
+            <button type="button" class="btn-outline" onclick="enableRecipeWriteMode()">✍️ Escribir</button>
+          </div>
+          <div class="recipe-counter" id="recipeCount">0/1000</div>
         </div>
       </div>
+
+      <div class="cards-stack">
+        <button class="card action-card action-ia" onclick="runAIExtraction()">
+          <div class="action-left">✨ Detectar con IA</div>
+          <div class="action-sub">La IA interpreta tu receta automáticamente</div>
+        </button>
+
+        <button class="card action-card" onclick="goToScreen2()" id="applyRecipeButton" aria-disabled="true" disabled>
+          <div class="action-left">💧 Aplicar receta</div>
+          <div class="action-sub">Calculá tu mezcla según los datos del lote</div>
+        </button>
+
+        <button class="card action-card" onclick="goToScreen5()">
+          <div class="action-left">🧪 Armar receta</div>
+          <div class="action-sub">Seleccioná productos y armá tu propia mezcla</div>
+        </button>
+      </div>
+
+      <div class="benefits">
+        <div class="benefit">Precisión<br><small>Dosis exactas</small></div>
+        <div class="benefit">Seguridad<br><small>Orden de carga automático</small></div>
+        <div class="benefit">Eficiencia<br><small>Menos tiempo más control</small></div>
+        <div class="benefit">Trazabilidad<br><small>Guardá y compartí tus recetas</small></div>
+      </div>
     </section>
+
+  <section id="screenHistory" class="hidden">
+    <div class="card">
+      <div class="screen-header">
+        <button class="back-button" onclick="goToScreen1()">←</button>
+        <div class="screen-header-title">
+          <h2>Historial</h2>
+          <p>Recetas guardadas</p>
+        </div>
+      </div>
+      <div id="historyList" class="product-list">
+        <div class="product-mix-empty">No hay historial aún.</div>
+      </div>
+    </div>
+  </section>
 
     <!-- PANTALLA 2 -->
     <section id="screen2" class="hidden">
@@ -1078,20 +364,20 @@
       </div>
     </section>
 
-      <div class="nav">
-        <div class="nav-item">
+      <div class="nav" role="navigation">
+        <div class="nav-item" onclick="navTo('home')" id="nav-home">
           <div class="nav-icon">🏠</div>
           <div class="nav-label">Inicio</div>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" onclick="navTo('recipes')" id="nav-recipes">
           <div class="nav-icon">📋</div>
           <div class="nav-label">Recetas</div>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" onclick="navTo('history')" id="nav-history">
           <div class="nav-icon">🕘</div>
           <div class="nav-label">Historial</div>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" onclick="navTo('profile')" id="nav-profile">
           <div class="nav-icon">👤</div>
           <div class="nav-label">Perfil</div>
         </div>
@@ -1103,13 +389,30 @@
 
   <script>
   function showScreen(target){
-    const screens = ['screen1','screen2','screen3','screen4','screen5','screen6','screen7','screen8'];
+    const screens = ['screen1','screen2','screen3','screen4','screen5','screen6','screen7','screen8','screenHistory'];
     screens.forEach(id => {
       const el = document.getElementById(id);
       if(el) el.classList.add('hidden');
     });
     const targetEl = document.getElementById(target);
     if(targetEl) targetEl.classList.remove('hidden');
+  }
+
+  function goToHistory(){
+    showScreen('screenHistory');
+    renderHistory();
+  }
+
+  function navTo(key){
+    // set active state
+    ['nav-home','nav-recipes','nav-history','nav-profile'].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) el.classList.toggle('active', id === 'nav-' + key);
+    });
+    if(key === 'home') return goToScreen1();
+    if(key === 'recipes') return goToScreen5();
+    if(key === 'history') return goToHistory();
+    if(key === 'profile') { showToastMessage('Perfil (próximamente)'); }
   }
 
   function goToScreen1(){
@@ -1393,8 +696,12 @@ cargarProductos();
     if(!recipeField) return;
     try {
       const text = await navigator.clipboard.readText();
-      recipeField.value = text || recipeField.value;
+      // replace current content with clipboard text
+      recipeField.value = text || '';
       recipeField.placeholder = 'Pega tu receta aquí';
+      updateRecipeCounter();
+      updateDetectButtonState();
+      recipeField.focus();
       showToastMessage(text ? 'Receta pegada desde el portapapeles' : 'No hay texto en el portapapeles');
     } catch (error) {
       showToastMessage('No se pudo leer el portapapeles');
@@ -1407,6 +714,8 @@ cargarProductos();
     recipeField.value = '';
     recipeField.placeholder = 'Ejemplo:\nGlifosato 48% 2 L/ha\n2,4D Amida 0.65 L/ha\nDicamba 48% 0.20 L/ha\nCoadyuvante 75 cc/ha\nFinesse 15 g/ha';
     recipeField.focus();
+    updateRecipeCounter();
+    updateDetectButtonState();
     showToastMessage('Ya podés escribir tu receta');
   }
 
@@ -2361,6 +1670,58 @@ cargarProductos();
 
     calculate();
     updateApplyRecipeButtonState();
+  </script>
+  <script>
+    // UI helper: update recipe character counter
+    function updateRecipeCounter(){
+      const ta = document.getElementById('recipe');
+      const counter = document.getElementById('recipeCount');
+      if(!ta || !counter) return;
+      const max = 1000;
+      const len = ta.value.length;
+      counter.innerText = `${len}/${max}`;
+    }
+    // init counter on load
+    document.addEventListener('DOMContentLoaded', function(){
+      updateRecipeCounter();
+      const ta = document.getElementById('recipe');
+      if(ta) ta.addEventListener('input', function(){ updateRecipeCounter(); updateDetectButtonState(); });
+      // set initial nav active
+      try{ navTo('home'); }catch(e){}
+      updateDetectButtonState();
+    });
+  </script>
+  <script>
+    // enable/disable Detectar IA button based on textarea content
+    function updateDetectButtonState(){
+      const ta = document.getElementById('recipe');
+      const detectBtn = document.querySelector('.action-ia');
+      if(!ta || !detectBtn) return;
+      const hasText = String(ta.value || '').trim().length > 0;
+      detectBtn.disabled = !hasText;
+      detectBtn.setAttribute('aria-disabled', String(!hasText));
+      detectBtn.classList.toggle('disabled', !hasText);
+    }
+
+    function renderHistory(){
+      const panel = document.getElementById('historyList');
+      if(!panel) return;
+      try{
+        const items = JSON.parse(localStorage.getItem('recipesHistory') || '[]');
+        if(!items || items.length === 0){
+          panel.innerHTML = '<div class="product-mix-empty">No hay recetas guardadas.</div>';
+          return;
+        }
+        panel.innerHTML = items.map(it => `<div style="padding:12px;border-bottom:1px solid #eaeef3;"><strong>${it.title || 'Receta'}</strong><div style="color:#64748b;font-size:13px;margin-top:6px;">${(it.text||'').replace(/\n/g,'<br>')}</div></div>`).join('');
+      }catch(e){
+        panel.innerHTML = '<div class="product-mix-empty">No hay recetas guardadas.</div>';
+      }
+    }
+
+    // init state for detect button
+    document.addEventListener('DOMContentLoaded', function(){
+      updateDetectButtonState();
+    });
   </script>
   <script>
   if ("serviceWorker" in navigator) {

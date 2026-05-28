@@ -1,0 +1,47 @@
+:root{ --soft-green:#10b981; --muted:#64748b; }
+.hero{ padding:6px 2px 14px 2px; position:relative; }
+.hero-badge{
+  display:inline-block;
+  color:var(--soft-green);
+  font-weight:800;
+  font-size:12px;
+  letter-spacing:0.04em;
+  margin-bottom:8px;
+}
+.hero-title{
+  font-size:36px;
+  line-height:1.02;
+  margin:8px 0 12px;
+  font-weight:900;
+}
+.hero-sub{
+  color:var(--muted);
+  margin:0 0 12px;
+}
+
+/* Recipe card */
+.recipe-card{ background:white; border-radius:18px; padding:14px; box-shadow:0 10px 30px rgba(15,23,42,0.06); border:1px solid rgba(15,23,42,0.04); }
+.card-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.card-label{ font-size:12px; font-weight:800; color:#0f172a; }
+.card-actions .link-button.small{ padding:6px 10px; border-radius:12px; font-size:13px; }
+
+textarea#recipe{ min-height:140px; border-radius:12px; padding:14px; font-size:15px; font-family: -apple-system, 'SF Pro Text', 'SF Pro Display', system-ui, sans-serif; }
+.hero::after{
+  content: '';
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  background: radial-gradient(circle at 30% 30%, rgba(16,24,40,0.03), rgba(16,24,40,0.00) 60%);
+  pointer-events:none;
+  display:none;
+}
+
+@media(min-width:380px){ .hero::after{ display:block; } }
+.recipe-controls{ display:flex; align-items:center; justify-content:space-between; margin-top:10px; }
+.split-buttons{ display:flex; gap:10px; width:100%; }
+.btn-outline{ flex:1; background:transparent; border:1px solid rgba(15,23,42,0.06); padding:12px 14px; border-radius:12px; font-weight:800; font-size:15px; color:#0f172a; }
+.btn-outline:hover{ background:#f8fafc; }
+.recipe-counter{ font-size:13px; color:#94a3b8; margin-left:12px; min-width:86px; text-align:right; }
