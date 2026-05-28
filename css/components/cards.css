@@ -1,14 +1,14 @@
 :root{ --muted-green:#0f766e; --soft-green:#10b981; }
-.cards-stack{ display:flex; flex-direction:column; gap:12px; margin-top:12px; }
-.action-card{ display:block; text-align:left; padding:14px; border-radius:14px; background:white; border:1px solid rgba(15,23,42,0.04); box-shadow:0 8px 24px rgba(15,23,42,0.04); }
-.action-card .action-left{ font-weight:800; font-size:16px; color:#0f172a; }
-.action-card .action-sub{ font-size:13px; color:#64748b; margin-top:6px; }
-.action-card.action-ia{ background:linear-gradient(180deg,#064e40,#0f766e); color:white; border:none; }
+.cards-stack{ display:flex; flex-direction:column; gap:8px; margin-top:8px; }
+.action-card{ display:block; text-align:left; padding:10px 12px; border-radius:12px; background:white; border:1px solid rgba(15,23,42,0.04); box-shadow:0 6px 18px rgba(15,23,42,0.04); min-height:56px; }
+.action-card .action-left{ font-weight:800; font-size:15px; color:#0f172a; display:flex; align-items:center; gap:8px; }
+.action-card .action-sub{ font-size:12px; color:#64748b; margin-top:4px; }
+.action-card.action-ia{ background:linear-gradient(180deg,#0f766e,#10b981); color:white; border:none; }
 .action-card.action-ia .action-sub{ color:rgba(255,255,255,0.9); font-weight:500; }
-.action-card.disabled{ opacity:0.5; pointer-events:none; }
+.action-card.disabled{ opacity:0.6; pointer-events:none; }
 
-.benefits{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:18px; }
-.benefit{ background:#ffffff; border-radius:12px; padding:12px; text-align:center; font-weight:800; color:#0f172a; font-size:13px; border:1px solid rgba(15,23,42,0.03); }
+.benefits{ display:flex; gap:8px; margin-top:12px; background:linear-gradient(90deg, rgba(15,23,42,0.02), rgba(15,23,42,0.00)); padding:6px; border-radius:16px; align-items:center; justify-content:space-between; }
+.benefit{ flex:1; background:transparent; border-radius:12px; padding:6px 8px; text-align:center; font-weight:800; color:#0f172a; font-size:13px; }
 .benefit small{ display:block; font-weight:600; font-size:12px; color:#64748b; margin-top:6px; }
 
 /* small utility */
